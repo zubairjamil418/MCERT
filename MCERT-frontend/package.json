@@ -1,0 +1,80 @@
+{
+  "name": "horizon-ui-tailwind-react",
+  "version": "2.0.0",
+  "private": true,
+  "dependencies": {
+    "@chakra-ui/hooks": "^2.1.4",
+    "@chakra-ui/modal": "^2.2.9",
+    "@chakra-ui/popover": "^2.1.8",
+    "@chakra-ui/portal": "^2.0.15",
+    "@chakra-ui/system": "^2.3.5",
+    "@chakra-ui/tooltip": "^2.2.6",
+    "@emotion/react": "^11.10.5",
+    "@emotion/styled": "^11.10.5",
+    "@mui/icons-material": "^7.0.2",
+    "@mui/material": "^7.3.2",
+    "@mui/x-data-grid": "^8.2.0",
+    "@onlyoffice/document-editor-react": "^2.0.0",
+    "@pqina/react-pintura": "^9.0.4",
+    "@react-google-maps/api": "^2.20.6",
+    "@reduxjs/toolkit": "^2.7.0",
+    "@tanstack/react-table": "^8.7.9",
+    "@testing-library/jest-dom": "^6.4.6",
+    "@testing-library/react": "^16.0.0",
+    "@testing-library/user-event": "^14.5.2",
+    "apexcharts": "3.35.5",
+    "axios": "^1.9.0",
+    "docxtemplater": "^3.65.3",
+    "docxtemplater-image-module-free": "^1.1.1",
+    "file-saver": "^2.0.5",
+    "pizzip": "^3.2.0",
+    "react": "19.0.0",
+    "react-apexcharts": "1.4.0",
+    "react-calendar": "^5.0.0",
+    "react-dom": "19.0.0",
+    "react-easy-crop": "^5.5.3",
+    "react-icons": "^4.4.0",
+    "react-router-dom": "^6.30.0",
+    "react-scripts": "^5.0.1",
+    "react-toastify": "^11.0.5",
+    "read-excel-file": "^6.0.1",
+    "tailwindcss-rtl": "^0.9.0",
+    "tui-color-picker": "^2.2.8",
+    "tui-image-editor": "^3.15.3",
+    "web-vitals": "^2.1.4",
+    "xlsx": "^0.18.5"
+  },
+  "scripts": {
+    "dev": "vite",
+    "start": "vite",
+    "build": "node build-and-exit.cjs",
+    "preview": "vite preview",
+    "pretty": "prettier --write \"./**/*.{js,jsx,json}\""
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^5.0.2",
+    "autoprefixer": "^10.4.8",
+    "postcss": "^8.4.16",
+    "prettier": "^2.8.3",
+    "prettier-plugin-tailwindcss": "^0.2.1",
+    "tailwindcss": "^3.1.8",
+    "vite": "^7.1.5"
+  }
+}

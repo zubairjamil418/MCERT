@@ -1,0 +1,42 @@
+import { Module } from '@nestjs/common';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
+import { AppController } from './app.controller';
+import { AppService } from './app.service';
+import { UsersModule } from './users/users.module';
+import { FormsModule } from './forms/forms.module';
+import { SecondFormsModule } from './second-forms/second-forms.module';
+import { thirdFormsModule } from './third-forms/third-forms.module';
+import { MongooseModule } from '@nestjs/mongoose';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { IamModule } from './iam/iam.module';
+import { SitesModule } from './sites/sites.module';
+import { OnlyofficeModule } from './onlyoffice/onlyoffice.module';
+import { DashboardModule } from './dashboard/dashboard.module';
+@Module({
+  imports: [
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'uploads', 'templates'),
+      serveRoot: '/onlyoffice/uploads',
+    }),
+    ConfigModule.forRoot({}),
+    MongooseModule.forRootAsync({
+      imports: [ConfigModule],
+      useFactory: async (configService: ConfigService) => ({
+        uri: configService.get<string>('MONGODB_URI'),
+      }),
+      inject: [ConfigService],
+    }),
+    UsersModule,
+    FormsModule,
+    SecondFormsModule,
+    thirdFormsModule,
+    IamModule,
+    SitesModule,
+    OnlyofficeModule,
+    DashboardModule,
+  ],
+  controllers: [AppController],
+  providers: [AppService],
+})
+export class AppModule {}
