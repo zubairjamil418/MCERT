@@ -2,7 +2,7 @@ import Card from "components/card";
 import { MdHistory } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
 
-const RecentInspections = ({ inspections = [], isLoading }) => {
+const RecentInspections = ({ inspections = [], isLoading, pagination, onPageChange }) => {
   const navigate = useNavigate();
 
   const formTypeRoute = {
@@ -142,6 +142,58 @@ const RecentInspections = ({ inspections = [], isLoading }) => {
               ))}
             </tbody>
           </table>
+        </div>
+      )}
+
+      {/* Pagination */}
+      {pagination && pagination.totalPages > 1 && (
+        <div className="mt-4 flex items-center justify-between border-t border-gray-200 pt-4 dark:border-gray-700">
+          <p className="text-sm text-gray-600 dark:text-gray-400">
+            Showing {((pagination.page - 1) * pagination.limit) + 1}–{Math.min(pagination.page * pagination.limit, pagination.total)} of {pagination.total}
+          </p>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => onPageChange(pagination.page - 1)}
+              disabled={!pagination.hasPrev}
+              className="rounded-lg border border-gray-200 px-3 py-1.5 text-sm text-gray-700 transition-colors hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-40 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-navy-700"
+            >
+              Previous
+            </button>
+            {Array.from({ length: pagination.totalPages }, (_, i) => i + 1)
+              .filter((p) => {
+                const current = pagination.page;
+                return p === 1 || p === pagination.totalPages || Math.abs(p - current) <= 1;
+              })
+              .reduce((acc, p, idx, arr) => {
+                if (idx > 0 && p - arr[idx - 1] > 1) acc.push("...");
+                acc.push(p);
+                return acc;
+              }, [])
+              .map((item, idx) =>
+                item === "..." ? (
+                  <span key={`ellipsis-${idx}`} className="px-1 text-gray-400">…</span>
+                ) : (
+                  <button
+                    key={item}
+                    onClick={() => onPageChange(item)}
+                    className={`rounded-lg px-3 py-1.5 text-sm font-medium transition-colors ${
+                      item === pagination.page
+                        ? "bg-brand-500 text-white"
+                        : "border border-gray-200 text-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-navy-700"
+                    }`}
+                  >
+                    {item}
+                  </button>
+                )
+              )}
+            <button
+              onClick={() => onPageChange(pagination.page + 1)}
+              disabled={!pagination.hasNext}
+              className="rounded-lg border border-gray-200 px-3 py-1.5 text-sm text-gray-700 transition-colors hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-40 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-navy-700"
+            >
+              Next
+            </button>
+          </div>
         </div>
       )}
     </Card>

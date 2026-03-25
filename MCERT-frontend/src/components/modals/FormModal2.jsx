@@ -2659,4 +2659,4 @@ const FormModal2 = ({
   );
 };
 
-export default FormModal2;
+export default React.memo(FormModal2);

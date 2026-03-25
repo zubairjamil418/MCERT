@@ -26,3 +26,8 @@ export class Site {
 }
 
 export const SiteSchema = SchemaFactory.createForClass(Site);
+
+SiteSchema.index({ siteName: 1 });
+SiteSchema.index({ location: 1 });
+SiteSchema.index({ type: 1 });
+SiteSchema.index({ installationDate: -1 });

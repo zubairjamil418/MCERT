@@ -145,6 +145,30 @@ import { saveAs } from "file-saver";
 import ImageModule from "docxtemplater-image-module-free";
 
 // --- helpers ---
+
+// Normalize PizZip entry paths from backslash (Windows) to forward-slash.
+// docxtemplater expects forward-slash paths like 'word/document.xml'.
+// On Windows, PizZip may store them as 'word\document.xml' which silently
+// prevents tag replacement.
+const normalizeZipPaths = (zip) => {
+  const entries = Object.keys(zip.files);
+  for (const entry of entries) {
+    if (entry.includes("\\")) {
+      const fwdEntry = entry.split("\\").join("/");
+      const zipEntry = zip.files[entry];
+      // Update the internal name property so docxtemplater's compile() finds it
+      if (zipEntry && typeof zipEntry === "object") {
+        zipEntry.name = fwdEntry;
+      }
+      if (!zip.files[fwdEntry]) {
+        zip.files[fwdEntry] = zipEntry;
+      }
+      delete zip.files[entry];
+    }
+  }
+  return zip;
+};
+
 const fileToDataURL = (file) =>
   new Promise((resolve, reject) => {
     const fr = new FileReader();
@@ -165,104 +189,12 @@ const DEFAULT_IMAGE_SIZE = { width: 530, height: 220 };
 const LARGE_IMAGE_SIZE = { width: 530, height: 220 };
 const SMALL_IMAGE_SIZE = { width: 230, height: 200 };
 
-// Summarize data for debugging without dumping full base64
-const summarizeForLog = (data) => {
-  try {
-    const summary = {};
-    for (const [key, value] of Object.entries(data || {})) {
-      if (value === null || value === undefined) {
-        summary[key] = value;
-      } else if (Array.isArray(value)) {
-        summary[key] = { type: "array", length: value.length };
-      } else if (value instanceof Date) {
-        summary[key] = { type: "date", value: value.toISOString() };
-      } else if (typeof value === "object") {
-        if (typeof value.dataUrl === "string") {
-          const len = value.dataUrl.length;
-          const preview = value.dataUrl.slice(0, 40);
-          summary[key] = {
-            type: "imagePayload",
-            width: value.width,
-            height: value.height,
-            caption: value.caption,
-            dataUrlPreview: `${preview}... (len=${len})`,
-          };
-        } else {
-          summary[key] = { type: "object" };
-        }
-      } else if (typeof value === "string") {
-        if (value.startsWith("data:")) {
-          const len = value.length;
-          summary[key] = `dataUrl(len=${len})`;
-        } else {
-          summary[key] =
-            value.length > 200 ? `${value.slice(0, 200)}...` : value;
-        }
-      } else {
-        summary[key] = value;
-      }
-    }
-    return summary;
-  } catch {
-    return { error: "summary_failed" };
+// Predefine empty captions to avoid undefined template tags
+const ensureCaptionPlaceholders = (data, prefix, count = 5) => {
+  for (let i = 1; i <= count; i++) {
+    const key = `${prefix}${i}Caption`;
+    if (data[key] === undefined) data[key] = "";
   }
-};
-
-// Ensure data passed into docxtemplater is safe: no undefined/null scalars and no plain objects,
-// while preserving image payload objects and arrays.
-const sanitizeForDocx = (data) => {
-  if (!data || typeof data !== "object") return {};
-  const sanitized = {};
-  for (const [key, value] of Object.entries(data)) {
-    if (value === undefined || value === null) {
-      sanitized[key] = "";
-      continue;
-    }
-    // Preserve image payloads or direct dataURLs for tags containing "image"
-    const isImageKey = key.toLowerCase().includes("image");
-    const isCaptionKey = key.endsWith("Caption");
-    if (isImageKey && !isCaptionKey) {
-      if (
-        (typeof value === "object" && typeof value.dataUrl === "string") ||
-        (typeof value === "string" && value.startsWith("data:"))
-      ) {
-        sanitized[key] = value;
-        continue;
-      }
-      // If image key but not a recognized payload, set empty to avoid crashes
-      sanitized[key] = undefined;
-      continue;
-    }
-    if (Array.isArray(value)) {
-      sanitized[key] = value;
-      continue;
-    }
-    if (value instanceof Date) {
-      sanitized[key] = formatDateToDDMMYYYY(value);
-      continue;
-    }
-    if (typeof value === "object") {
-      // Avoid passing arbitrary objects to docxtemplater
-      sanitized[key] = "";
-      continue;
-    }
-    sanitized[key] = value;
-  }
-  return sanitized;
-};
-
-const stripAllImages = (data) => {
-  const clone = { ...data };
-  const strippedKeys = [];
-  for (const key of Object.keys(clone)) {
-    if (key.toLowerCase().includes("image")) {
-      if (clone[key] !== undefined) {
-        strippedKeys.push(key);
-      }
-      clone[key] = undefined;
-    }
-  }
-  return { clone, strippedKeys };
 };
 // (Captions are set directly as strings in the data object below; no extra processing needed)
 const getDataURLFromValue = async (value) => {
@@ -369,42 +301,24 @@ export const generateDocumentFromTemplate = async (
   formData,
   fileName = "generated-document.docx"
 ) => {
-  console.log("formData", formData);
   try {
     const res = await fetch("/templates/mclerts-template.docx");
     if (!res.ok)
       throw new Error("Template not found at /templates/mclerts-template.docx");
-    const zip = new PizZip(await res.arrayBuffer());
+    const zip = normalizeZipPaths(new PizZip(await res.arrayBuffer()));
 
     // Image module: value is a dataURL string
     const imageModule = new ImageModule({
       getImage: (tagValue /* dataURL */, tagName) => {
-        if (
-          tagValue &&
-          typeof tagValue === "object" &&
-          typeof tagValue.dataUrl === "string"
-        ) {
-          return dataURLToBytes(tagValue.dataUrl);
-        }
         if (typeof tagValue === "string" && tagValue.startsWith("data:")) {
           return dataURLToBytes(tagValue);
         }
         return new Uint8Array(); // no image -> remove tag
       },
       getSize: (imgBytes, tagValue, tagName) => {
-        // If an object with explicit size is provided, honor it
-        if (tagValue && typeof tagValue === "object") {
-          const width = Number(tagValue.width);
-          const height = Number(tagValue.height);
-          return [
-            Number.isFinite(width) ? width : DEFAULT_IMAGE_SIZE.width,
-            Number.isFinite(height) ? height : DEFAULT_IMAGE_SIZE.height,
-          ];
-        }
-        // Otherwise, size by tag name: first image of any group gets large size
-        const isFirstSlot =
-          typeof tagName === "string" && /Image1$/.test(tagName);
-        const size = isFirstSlot ? LARGE_IMAGE_SIZE : SMALL_IMAGE_SIZE;
+        // First image slot of any group larger, others smaller
+        const isFirst = typeof tagName === "string" && /Image1$/.test(tagName);
+        const size = isFirst ? LARGE_IMAGE_SIZE : SMALL_IMAGE_SIZE;
         return [size.width, size.height];
       },
     });
@@ -414,55 +328,40 @@ export const generateDocumentFromTemplate = async (
       linebreaks: true,
       modules: [imageModule],
     });
+
     try {
-      const safeData = sanitizeForDocx(formData);
-      // Debug: log only caption fields to verify values
-      const captionEntries = Object.entries(safeData).filter(([k]) =>
-        k.endsWith("Caption")
-      );
-      // eslint-disable-next-line no-console
-      console.log(
-        "Docxtemplater caption values:",
-        Object.fromEntries(captionEntries)
-      );
-      // eslint-disable-next-line no-console
-      console.log("Docxtemplater data summary:", summarizeForLog(safeData));
-      doc.render(safeData);
+      doc.setData(formData);
+      doc.render();
     } catch (renderError) {
-      // Surface helpful diagnostics from docxtemplater
-      // Some environments attach details on renderError.properties
-      // eslint-disable-next-line no-console
       console.error("Docxtemplater render error:", {
         name: renderError?.name,
         message: renderError?.message,
         properties: renderError?.properties,
-        errors: renderError?.properties?.errors,
       });
-      // Fallback retry: strip all images and try again so user still gets a file
+      // Fallback: fetch a FRESH template and retry without image data
       try {
-        const safeData = sanitizeForDocx(formData);
-        const { clone, strippedKeys } = stripAllImages(safeData);
-        // eslint-disable-next-line no-console
-        console.warn(
-          "Retrying render without images. Stripped image keys:",
-          strippedKeys
-        );
-        const retryDoc = new Docxtemplater(zip, {
+        const retryRes = await fetch("/templates/mclerts-template.docx");
+        if (!retryRes.ok) throw renderError;
+        const freshZip = normalizeZipPaths(new PizZip(await retryRes.arrayBuffer()));
+        const retryDoc = new Docxtemplater(freshZip, {
           paragraphLoop: true,
           linebreaks: true,
           modules: [imageModule],
         });
-        retryDoc.render(clone);
-        const out = retryDoc.getZip().generate({
+        const clone = Object.fromEntries(
+          Object.entries(formData).map(([k, v]) => [
+            k,
+            k.toLowerCase().includes("image") && !k.endsWith("Caption") ? undefined : v,
+          ])
+        );
+        retryDoc.setData(clone);
+        retryDoc.render();
+        const retryOut = retryDoc.getZip().generate({
           type: "blob",
-          mimeType:
-            "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+          mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
         });
-        saveAs(out, fileName);
-        return {
-          success: true,
-          message: "Rendered without images due to template issue",
-        };
+        saveAs(retryOut, fileName);
+        return { success: true, message: "Rendered without images due to template issue" };
       } catch (retryError) {
         throw renderError;
       }
@@ -628,7 +527,7 @@ export const generateMCLERTSReport = async (formData) => {
     aerialViewImage3Caption: formData.aerialViewImage3Caption || "",
     aerialViewImage4Caption: formData.aerialViewImage4Caption || "",
     aerialViewImage5Caption: formData.aerialViewImage5Caption || "",
-    siteProcessImage1Caption: formData.siteProcessCaptions[0] || "",
+    siteProcessImage1Caption: formData.siteProcessImage1Caption || "",
     siteProcessImage2Caption: formData.siteProcessImage2Caption || "",
     siteProcessImage3Caption: formData.siteProcessImage3Caption || "",
     siteProcessImage4Caption: formData.siteProcessImage4Caption || "",
@@ -664,7 +563,7 @@ export const generateMCLERTSReport = async (formData) => {
     appendixCImage4Caption: formData.appendixCImage4Caption || "",
     appendixCImage5Caption: formData.appendixCImage5Caption || "",
   };
-  console.log("data", data);
+
   const singleAerialSource =
     formData.aerialViewFile || formData.aerialViewImage || null;
   const singleAerialDataUrl = await getDataURLFromValue(singleAerialSource);
@@ -688,48 +587,56 @@ export const generateMCLERTSReport = async (formData) => {
     captionsKey: "aerialViewCaptions",
     templatePrefix: "aerialViewImage",
   });
+  ensureCaptionPlaceholders(data, "aerialViewImage");
 
   await assignImageArray(data, formData, {
     filesKey: "siteProcessImages",
     captionsKey: "siteProcessCaptions",
     templatePrefix: "siteProcessImage",
   });
+  ensureCaptionPlaceholders(data, "siteProcessImage");
 
   await assignImageArray(data, formData, {
     filesKey: "inspectionFlowImages",
     captionsKey: "inspectionFlowCaptions",
     templatePrefix: "inspectionFlowImage",
   });
+  ensureCaptionPlaceholders(data, "inspectionFlowImage");
 
   await assignImageArray(data, formData, {
     filesKey: "flowMeasurementImages",
     captionsKey: "flowMeasurementCaptions",
     templatePrefix: "flowMeasurementImage",
   });
+  ensureCaptionPlaceholders(data, "flowMeasurementImage");
 
   await assignImageArray(data, formData, {
     filesKey: "surveyEquipmentImages",
     captionsKey: "surveyEquipmentCaptions",
     templatePrefix: "surveyEquipmentImage",
   });
+  ensureCaptionPlaceholders(data, "surveyEquipmentImage");
 
   await assignImageArray(data, formData, {
     filesKey: "appendixAFiles",
     captionsKey: "appendixACaptions",
     templatePrefix: "appendixAImage",
   });
+  ensureCaptionPlaceholders(data, "appendixAImage");
 
   await assignImageArray(data, formData, {
     filesKey: "appendixBFiles",
     captionsKey: "appendixBCaptions",
     templatePrefix: "appendixBImage",
   });
+  ensureCaptionPlaceholders(data, "appendixBImage");
 
   await assignImageArray(data, formData, {
     filesKey: "appendixCFiles",
     captionsKey: "appendixCCaptions",
     templatePrefix: "appendixCImage",
   });
+  ensureCaptionPlaceholders(data, "appendixCImage");
 
   const fileName = `MCERTS_Report_${data.siteName || "Site"}_${
     data.dateOfInspection || new Date().toISOString().split("T")[0]

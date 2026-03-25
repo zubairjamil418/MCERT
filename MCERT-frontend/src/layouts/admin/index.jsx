@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Suspense } from "react";
 import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import Navbar from "components/navbar";
 import Sidebar from "components/sidebar";
@@ -76,14 +76,16 @@ export default function Admin(props) {
               {...rest}
             />
             <div className="mx-auto mb-auto h-full min-h-[84vh] p-2 pt-5 md:pr-2">
-              <Routes>
-                {getRoutes(routes)}
+              <Suspense fallback={<div className="flex h-full items-center justify-center"><div className="h-8 w-8 animate-spin rounded-full border-4 border-navy-700 border-t-transparent" /></div>}>
+                <Routes>
+                  {getRoutes(routes)}
 
-                <Route
-                  path="/"
-                  element={<Navigate to="/admin/default" replace />}
-                />
-              </Routes>
+                  <Route
+                    path="/"
+                    element={<Navigate to="/admin/default" replace />}
+                  />
+                </Routes>
+              </Suspense>
             </div>
             <div className="p-3">
               <Footer />

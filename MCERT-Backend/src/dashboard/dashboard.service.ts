@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { Form } from '../forms/entities/form.entity';
 import { SecondForm } from '../second-forms/entities/second-form.entity';
 import { thirdForm } from '../third-forms/entities/third-form.entity';
@@ -15,26 +15,51 @@ export class DashboardService {
     private readonly thirdFormModel: Model<thirdForm>,
   ) {}
 
-  async getStats(userId?: string) {
-    const userFilter = userId ? { userId } : {};
+  async getStats(userId?: string, formType?: string, startDate?: string, endDate?: string) {
+    const userFilter: any = userId ? { userId: new Types.ObjectId(userId) } : {};
 
-    const [form1Stats, form2Stats, form3Stats] = await Promise.all([
-      this.getFormTypeStats(this.formModel, userFilter),
-      this.getFormTypeStats(this.secondFormModel, userFilter),
-      this.getFormTypeStats(this.thirdFormModel, userFilter),
-    ]);
+    // Apply date filter to base filter
+    if (startDate || endDate) {
+      userFilter.createdAt = {};
+      if (startDate) userFilter.createdAt.$gte = new Date(startDate);
+      if (endDate) {
+        const end = new Date(endDate);
+        end.setHours(23, 59, 59, 999);
+        userFilter.createdAt.$lte = end;
+      }
+    }
 
-    // Monthly trend — last 6 months
+    // Determine which form types to include
+    const includeForm1 = !formType || formType === 'all' || formType === 'form1';
+    const includeForm2 = !formType || formType === 'all' || formType === 'form2';
+    const includeForm3 = !formType || formType === 'all' || formType === 'form3';
+
+    const statsPromises = [];
+    if (includeForm1) statsPromises.push(this.getFormTypeStats(this.formModel, userFilter));
+    if (includeForm2) statsPromises.push(this.getFormTypeStats(this.secondFormModel, userFilter));
+    if (includeForm3) statsPromises.push(this.getFormTypeStats(this.thirdFormModel, userFilter));
+
+    const statsResults = await Promise.all(statsPromises);
+    const form1Stats = includeForm1 ? statsResults.shift() : { total: 0, pending: 0, submitted: 0, thisMonth: 0 };
+    const form2Stats = includeForm2 ? statsResults.shift() : { total: 0, pending: 0, submitted: 0, thisMonth: 0 };
+    const form3Stats = includeForm3 ? statsResults.shift() : { total: 0, pending: 0, submitted: 0, thisMonth: 0 };
+
+    // Monthly trend — last 6 months (use base user filter without date range for trend)
+    const trendFilter: any = userId ? { userId: new Types.ObjectId(userId) } : {};
     const sixMonthsAgo = new Date();
     sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
     sixMonthsAgo.setDate(1);
     sixMonthsAgo.setHours(0, 0, 0, 0);
 
-    const [monthlyForm1, monthlyForm2, monthlyForm3] = await Promise.all([
-      this.getMonthlyTrend(this.formModel, userFilter, sixMonthsAgo),
-      this.getMonthlyTrend(this.secondFormModel, userFilter, sixMonthsAgo),
-      this.getMonthlyTrend(this.thirdFormModel, userFilter, sixMonthsAgo),
-    ]);
+    const trendPromises = [];
+    if (includeForm1) trendPromises.push(this.getMonthlyTrend(this.formModel, trendFilter, sixMonthsAgo));
+    if (includeForm2) trendPromises.push(this.getMonthlyTrend(this.secondFormModel, trendFilter, sixMonthsAgo));
+    if (includeForm3) trendPromises.push(this.getMonthlyTrend(this.thirdFormModel, trendFilter, sixMonthsAgo));
+
+    const trendResults = await Promise.all(trendPromises);
+    const monthlyForm1 = includeForm1 ? trendResults.shift() : [];
+    const monthlyForm2 = includeForm2 ? trendResults.shift() : [];
+    const monthlyForm3 = includeForm3 ? trendResults.shift() : [];
 
     const monthlyTrend = this.mergeMonthlyTrends(
       monthlyForm1,
@@ -43,21 +68,21 @@ export class DashboardService {
     );
 
     // Upcoming validations from Form 2 & 3 (they have nextFlowValidationDate)
-    const [validations2, validations3] = await Promise.all([
-      this.getUpcomingValidations(this.secondFormModel, userFilter, 'Form 2'),
-      this.getUpcomingValidations(this.thirdFormModel, userFilter, 'Form 3'),
-    ]);
-    const upcomingValidations = [...validations2, ...validations3].sort(
+    const validationPromises = [];
+    if (includeForm2) validationPromises.push(this.getUpcomingValidations(this.secondFormModel, userFilter, 'Form 2'));
+    if (includeForm3) validationPromises.push(this.getUpcomingValidations(this.thirdFormModel, userFilter, 'Form 3'));
+    const validationResults = await Promise.all(validationPromises);
+    const upcomingValidations = validationResults.flat().sort(
       (a, b) => new Date(a.validationDue).getTime() - new Date(b.validationDue).getTime(),
     );
 
-    // Recent inspections — last 10 across all types
-    const [recent1, recent2, recent3] = await Promise.all([
-      this.getRecentInspections(this.formModel, userFilter, 'Form 1'),
-      this.getRecentInspections(this.secondFormModel, userFilter, 'Form 2'),
-      this.getRecentInspections(this.thirdFormModel, userFilter, 'Form 3'),
-    ]);
-    const recentInspections = [...recent1, ...recent2, ...recent3]
+    // Recent inspections — last 10 across selected types
+    const recentPromises = [];
+    if (includeForm1) recentPromises.push(this.getRecentInspections(this.formModel, userFilter, 'Form 1'));
+    if (includeForm2) recentPromises.push(this.getRecentInspections(this.secondFormModel, userFilter, 'Form 2'));
+    if (includeForm3) recentPromises.push(this.getRecentInspections(this.thirdFormModel, userFilter, 'Form 3'));
+    const recentResults = await Promise.all(recentPromises);
+    const recentInspections = recentResults.flat()
       .sort(
         (a, b) =>
           new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
@@ -236,6 +261,7 @@ export class DashboardService {
     model: Model<any>,
     userFilter: any,
     formType: string,
+    maxLimit = 10,
   ) {
     const docs = await model
       .find(userFilter)
@@ -243,7 +269,7 @@ export class DashboardService {
         '_id status formData.siteName formData.inspector formData.dateOfInspection createdAt',
       )
       .sort({ createdAt: -1 })
-      .limit(10)
+      .limit(maxLimit)
       .lean();
 
     return docs.map((doc: any) => ({
@@ -255,5 +281,65 @@ export class DashboardService {
       dateOfInspection: doc.formData?.dateOfInspection || '',
       createdAt: doc.createdAt,
     }));
+  }
+
+  async getRecentInspectionsPaginated(
+    userId?: string,
+    formType?: string,
+    startDate?: string,
+    endDate?: string,
+    page = 1,
+    limit = 10,
+  ) {
+    const baseFilter: any = userId ? { userId: new Types.ObjectId(userId) } : {};
+    if (startDate || endDate) {
+      baseFilter.createdAt = {};
+      if (startDate) baseFilter.createdAt.$gte = new Date(startDate);
+      if (endDate) {
+        const end = new Date(endDate);
+        end.setHours(23, 59, 59, 999);
+        baseFilter.createdAt.$lte = end;
+      }
+    }
+
+    const includeForm1 = !formType || formType === 'all' || formType === 'form1';
+    const includeForm2 = !formType || formType === 'all' || formType === 'form2';
+    const includeForm3 = !formType || formType === 'all' || formType === 'form3';
+
+    // Count totals from included form types
+    const countPromises = [];
+    if (includeForm1) countPromises.push(this.formModel.countDocuments(baseFilter));
+    if (includeForm2) countPromises.push(this.secondFormModel.countDocuments(baseFilter));
+    if (includeForm3) countPromises.push(this.thirdFormModel.countDocuments(baseFilter));
+    const counts = await Promise.all(countPromises);
+    const total = counts.reduce((sum, c) => sum + c, 0);
+
+    // Fetch all matching docs from included types (limited to a reasonable window)
+    const fetchPromises = [];
+    if (includeForm1) fetchPromises.push(this.getRecentInspections(this.formModel, baseFilter, 'Form 1', total));
+    if (includeForm2) fetchPromises.push(this.getRecentInspections(this.secondFormModel, baseFilter, 'Form 2', total));
+    if (includeForm3) fetchPromises.push(this.getRecentInspections(this.thirdFormModel, baseFilter, 'Form 3', total));
+    const allResults = (await Promise.all(fetchPromises)).flat();
+
+    // Sort all by createdAt descending, then paginate
+    allResults.sort(
+      (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+    );
+
+    const totalPages = Math.ceil(total / limit);
+    const skip = (page - 1) * limit;
+    const data = allResults.slice(skip, skip + limit);
+
+    return {
+      data,
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages,
+        hasNext: page < totalPages,
+        hasPrev: page > 1,
+      },
+    };
   }
 }

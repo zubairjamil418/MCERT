@@ -5,6 +5,7 @@ import {
   getAuthHeaders,
 } from "../constants/api";
 
+
 // Helper function to make API calls
 const makeApiCall = async (url, options = {}) => {
   try {
@@ -49,6 +50,15 @@ export const formsService = {
   getFormById: async (id, token = null) => {
     const headers = token ? getAuthHeaders(token) : DEFAULT_HEADERS;
     return makeApiCall(FORMS_API.GET_BY_ID(id), {
+      method: HTTP_METHODS.GET,
+      headers,
+    });
+  },
+
+  // Get single form by ID with full formData (from file storage)
+  getFormWithData: async (id, token = null) => {
+    const headers = token ? getAuthHeaders(token) : DEFAULT_HEADERS;
+    return makeApiCall(FORMS_API.GET_BY_ID_WITH_DATA(id), {
       method: HTTP_METHODS.GET,
       headers,
     });

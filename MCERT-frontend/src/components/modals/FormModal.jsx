@@ -2203,4 +2203,4 @@ const FormModal = ({
   );
 };
 
-export default FormModal;
+export default React.memo(FormModal);

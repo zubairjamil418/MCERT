@@ -2780,4 +2780,4 @@ const FormModal3 = ({
   );
 };
 
-export default FormModal3;
+export default React.memo(FormModal3);

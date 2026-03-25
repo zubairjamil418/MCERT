@@ -44,7 +44,13 @@ const FormsTable = ({
   hasNext,
   handleNextPage,
   handleAddNewForm,
+  selectedIds = new Set(),
+  onToggleSelect,
+  onToggleSelectAll,
+  onBulkDelete,
 }) => {
+  const allSelected = forms.length > 0 && selectedIds.size === forms.length;
+  const someSelected = selectedIds.size > 0 && selectedIds.size < forms.length;
   return (
     <Card extra="w-full p-6">
       {isLoadingForms && (
@@ -101,10 +107,36 @@ const FormsTable = ({
         </div>
       )}
       {!isLoadingForms && !error && (
+        <>
+          {selectedIds.size > 0 && (
+            <div className="mb-4 flex items-center justify-between rounded-lg bg-blue-50 px-4 py-3 dark:bg-blue-900/20">
+              <span className="text-sm font-medium text-blue-700 dark:text-blue-300">
+                {selectedIds.size} form{selectedIds.size !== 1 ? "s" : ""} selected
+              </span>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={onBulkDelete}
+                  disabled={isDeletingForm}
+                  className="rounded-md bg-red-100 px-3 py-1.5 text-sm text-red-700 transition-colors hover:bg-red-200 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-red-900/30 dark:text-red-300 dark:hover:bg-red-800/40"
+                >
+                  Delete Selected
+                </button>
+              </div>
+            </div>
+          )}
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
               <tr className="border-b border-gray-200 dark:border-gray-700">
+                <th className="w-10 px-4 py-4">
+                  <input
+                    type="checkbox"
+                    checked={allSelected}
+                    ref={(el) => { if (el) el.indeterminate = someSelected; }}
+                    onChange={onToggleSelectAll}
+                    className="h-4 w-4 cursor-pointer rounded border-gray-300 text-blue-600 focus:ring-blue-500 dark:border-gray-600"
+                  />
+                </th>
                 <th className="px-4 py-4 text-left font-semibold text-gray-700 dark:text-gray-300">
                   Site Name
                 </th>
@@ -131,6 +163,14 @@ const FormsTable = ({
                   key={form._id}
                   className="border-b border-gray-100 hover:bg-gray-50 dark:border-gray-800 dark:hover:bg-gray-800"
                 >
+                  <td className="w-10 px-4 py-4">
+                    <input
+                      type="checkbox"
+                      checked={selectedIds.has(form._id || form.id)}
+                      onChange={() => onToggleSelect(form._id || form.id)}
+                      className="h-4 w-4 cursor-pointer rounded border-gray-300 text-blue-600 focus:ring-blue-500 dark:border-gray-600"
+                    />
+                  </td>
                   <td className="px-4 py-4">
                     <div className="flex items-center">
                       <div className="mr-3 flex h-10 w-10 items-center justify-center rounded-lg bg-blue-100 dark:bg-blue-900">
@@ -216,6 +256,7 @@ const FormsTable = ({
             </tbody>
           </table>
         </div>
+        </>
       )}
       {forms.length > 0 && (
         <div className="flex items-center justify-between border-t border-gray-200 px-4 py-4 dark:border-gray-700">

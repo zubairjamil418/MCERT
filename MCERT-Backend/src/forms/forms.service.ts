@@ -97,6 +97,12 @@ export class FormsService {
       formDocument.isCompressed = fileResult.compressed;
       formDocument.fileSize = fileResult.fileSize;
       formDocument.storageMethod = 'file';
+      // Save minimal display fields to MongoDB for fast list queries
+      formDocument.formData = {
+        siteName: formData?.siteName,
+        inspector: formData?.inspector,
+        dateOfInspection: formData?.dateOfInspection,
+      };
 
       console.log(
         `Form data stored as file: ${formDocument.fileName} (${(fileResult.fileSize / 1024 / 1024).toFixed(2)}MB, compressed: ${fileResult.compressed})`,
@@ -131,7 +137,7 @@ export class FormsService {
   }
 
   async findAll(): Promise<any[]> {
-    const forms = await this.formModel.find().populate('userId').exec();
+    const forms = await this.formModel.find().populate('userId').lean().exec();
 
     // Process each form to include data from files
     for (const form of forms) {
@@ -154,15 +160,15 @@ export class FormsService {
       throw new NotFoundException(`Form with ID ${id} not found`);
     }
 
-    // Retrieve form data from file (primary method)
+    // Retrieve form data from file (primary method).
+    // Use toObject() + spread so Mongoose schema casting does NOT strip extra fields.
     try {
-      form.formData = await this.getFormData(form);
+      const formData = await this.getFormData(form);
+      return { ...form.toObject(), formData };
     } catch (error) {
       console.error(`Error retrieving form data for ${form._id}:`, error);
       throw new Error(`Failed to retrieve form data: ${error.message}`);
     }
-
-    return form;
   }
 
   // Migration method to convert existing forms to file storage
@@ -288,31 +294,6 @@ export class FormsService {
     console.log(`Migrated form ${form._id} to file: ${fileResult.filePath}`);
   }
 
-  // Legacy method for backward compatibility
-  async findAllLegacy(): Promise<any[]> {
-    const forms = await this.formModel.find().populate('userId').exec();
-    const processedForms = [];
-
-    for (const form of forms) {
-      if (form.isLargeData && form.gridFSFileId) {
-        try {
-          const formData = await this.retrieveFromGridFS(form.gridFSFileId);
-          processedForms.push({ ...form.toObject(), formData });
-        } catch (error) {
-          processedForms.push({
-            ...form.toObject(),
-            formData: null,
-            _gridfsError: 'Failed to retrieve form data from storage',
-          });
-        }
-      } else {
-        processedForms.push(form);
-      }
-    }
-
-    return processedForms;
-  }
-
   async findAllPaginated(
     paginationDto: PaginationDto,
   ): Promise<PaginatedFormsDto> {
@@ -348,6 +329,7 @@ export class FormsService {
     const formsQuery = this.formModel
       .find(query)
       .populate('userId')
+      .lean()
       .sort(sort)
       .skip(skip)
       .limit(limit);
@@ -357,55 +339,23 @@ export class FormsService {
       `Retrieved ${forms.length} forms for pagination. includeFormData: ${includeFormData}`,
     );
 
-    // Process forms based on includeFormData flag - using parallel processing for GridFS retrieval
-    console.log(`Starting parallel processing of ${forms.length} forms`);
-
+    // Process forms - using parallel processing
     const processedForms = await Promise.all(
       forms.map(async (form) => {
-        console.log(
-          `Processing form ${form._id} - isLargeData: ${form.isLargeData}, hasGridFSFileId: ${!!form.gridFSFileId}, dataSize: ${form.dataSize}`,
-        );
-
-        if (includeFormData && form.isLargeData && form.gridFSFileId) {
-          console.log(
-            `Processing large form data - gridFSFileId: ${form.gridFSFileId}, dataSize: ${form.dataSize}`,
-          );
+        if (includeFormData) {
           try {
-            const formData = await this.retrieveFromGridFS(form.gridFSFileId);
-            console.log(
-              `Successfully retrieved GridFS data for form ${form._id}`,
-            );
-            return { ...form.toObject(), formData };
+            form.formData = await this.getFormData(form);
+            return { ...form };
           } catch (error) {
-            console.error(
-              `Failed to retrieve GridFS data for form ${form._id}:`,
-              error,
-            );
+            console.error(`Failed to retrieve data for form ${form._id}:`, error);
             return {
-              ...form.toObject(),
+              ...form,
               formData: null,
-              _gridfsError: 'Failed to retrieve form data from storage',
+              _error: 'Failed to retrieve form data from storage',
             };
-          }
-        } else if (includeFormData) {
-          // Include form data if it's stored directly (non-large data)
-          console.log(
-            `Processing small form data - isLargeData: ${form.isLargeData}, hasFormData: ${!!form.formData}, gridFSFileId: ${form.gridFSFileId}`,
-          );
-          return form.toObject();
-        } else {
-          // For performance, don't retrieve GridFS data by default
-          if (form.isLargeData) {
-            return {
-              ...form.toObject(),
-              formData: null,
-              _hasLargeData: true,
-              _dataSize: `${(form.dataSize / 1024 / 1024).toFixed(2)}MB`,
-            };
-          } else {
-            return form.toObject();
           }
         }
+        return { ...form };
       }),
     );
 
@@ -503,6 +453,7 @@ export class FormsService {
     const forms = await this.formModel
       .find({ userId: userId })
       .populate('userId')
+      .lean()
       .exec();
 
     // For performance, don't retrieve GridFS data in list operations
@@ -510,7 +461,7 @@ export class FormsService {
     return forms.map((form) => {
       if (form.isLargeData) {
         return {
-          ...form.toObject(),
+          ...form,
           formData: null,
           _hasLargeData: true,
           _dataSize: `${(form.dataSize / 1024 / 1024).toFixed(2)}MB`,
@@ -559,48 +510,27 @@ export class FormsService {
       .sort(sort)
       .skip(skip)
       .limit(limit)
+      .lean()
       .exec();
 
-    // Process forms based on includeFormData flag - using parallel processing for GridFS retrieval
-    console.log(`Starting parallel processing of ${forms.length} user forms`);
-
+    // Process forms - using parallel processing
     const processedForms = await Promise.all(
       forms.map(async (form) => {
-        if (includeFormData && form.isLargeData && form.gridFSFileId) {
+        if (includeFormData) {
           try {
-            const formData = await this.retrieveFromGridFS(form.gridFSFileId);
-            return { ...form.toObject(), formData };
+            form.formData = await this.getFormData(form);
+            return { ...form };
           } catch (error) {
-            console.error(
-              `Failed to retrieve GridFS data for form ${form._id}:`,
-              error,
-            );
+            console.error(`Failed to retrieve data for form ${form._id}:`, error);
             return {
-              ...form.toObject(),
+              ...form,
               formData: null,
-              _gridfsError: 'Failed to retrieve form data from storage',
+              _error: 'Failed to retrieve form data from storage',
             };
-          }
-        } else if (includeFormData) {
-          return form.toObject();
-        } else {
-          // For performance, don't retrieve GridFS data by default
-          if (form.isLargeData) {
-            return {
-              ...form.toObject(),
-              formData: null,
-              _hasLargeData: true,
-              _dataSize: `${(form.dataSize / 1024 / 1024).toFixed(2)}MB`,
-            };
-          } else {
-            return form.toObject();
           }
         }
+        return { ...form };
       }),
-    );
-
-    console.log(
-      `Completed parallel processing of ${processedForms.length} user forms`,
     );
 
     // Calculate pagination info
@@ -648,44 +578,45 @@ export class FormsService {
       throw new NotFoundException('Form not found');
     }
 
-    // If updating form data, handle size-based storage
+    // If updating form data, use file storage (same as create)
     if (updateFormDto.formData) {
       const payloadSize = JSON.stringify(updateFormDto.formData).length;
-      console.log(
-        `Update payload size: ${(payloadSize / 1024 / 1024).toFixed(2)}MB`,
+
+      // Delete old file if exists
+      if (existingForm.filePath) {
+        try {
+          await this.fileStorageService.deleteFormData(existingForm.filePath);
+        } catch (error) {
+          console.error('Error deleting old form file:', error);
+        }
+      }
+
+      // Store updated data as a new file
+      const formId = existingForm._id.toString();
+      const fileResult = await this.fileStorageService.storeFormData(
+        formId,
+        updateFormDto.formData,
+        {
+          compress: payloadSize > 1 * 1024 * 1024,
+          format: 'json',
+        },
       );
 
-      // Clean up old GridFS data if it exists
-      if (existingForm.isLargeData && existingForm.gridFSFileId) {
-        await this.deleteFromGridFS(existingForm.gridFSFileId);
-      }
-
-      // Decide new storage method
-      if (payloadSize > this.MAX_DIRECT_STORAGE_SIZE) {
-        console.log('Updating to GridFS storage');
-
-        const gridFSFileId = await this.storeInGridFS(updateFormDto.formData, {
-          userId: existingForm.userId,
-          formType: 'form-update',
-        });
-
-        updateFormDto = {
-          ...updateFormDto,
-          gridFSFileId: gridFSFileId.toString(),
-          isLargeData: true,
-          formData: undefined, // Remove direct data
-          dataSize: payloadSize,
-        };
-      } else {
-        console.log('Updating to direct storage');
-
-        updateFormDto = {
-          ...updateFormDto,
-          gridFSFileId: undefined,
-          isLargeData: false,
-          dataSize: payloadSize,
-        };
-      }
+      updateFormDto = {
+        ...updateFormDto,
+        filePath: fileResult.filePath,
+        fileName: fileResult.filePath.split(/[/\\]/).pop(),
+        isCompressed: fileResult.compressed,
+        fileSize: fileResult.fileSize,
+        storageMethod: 'file',
+        dataSize: payloadSize,
+        // Save minimal display fields to MongoDB for fast list queries
+        formData: {
+          siteName: updateFormDto.formData?.siteName,
+          inspector: updateFormDto.formData?.inspector,
+          dateOfInspection: updateFormDto.formData?.dateOfInspection,
+        },
+      } as any;
     }
 
     const updatedForm = await this.formModel
@@ -706,9 +637,13 @@ export class FormsService {
       throw new NotFoundException('Form not found');
     }
 
-    // Clean up GridFS data if it exists
-    if (form.isLargeData && form.gridFSFileId) {
-      await this.deleteFromGridFS(form.gridFSFileId);
+    // Clean up file storage if it exists
+    if (form.filePath) {
+      try {
+        await this.fileStorageService.deleteFormData(form.filePath);
+      } catch (error) {
+        console.error('Error deleting form file:', error);
+      }
     }
 
     await this.formModel.findByIdAndDelete(id);
@@ -780,7 +715,7 @@ export class FormsService {
       const { formIds } = bulkDeleteDto;
 
       // Get forms to clean up GridFS data
-      const forms = await this.formModel.find({ _id: { $in: formIds } });
+      const forms = await this.formModel.find({ _id: { $in: formIds } }).lean();
 
       // Clean up GridFS data for large forms
       for (const form of forms) {
@@ -838,6 +773,7 @@ export class FormsService {
     const forms = await this.formModel
       .find(query)
       .populate('userId')
+      .lean()
       .sort({ createdAt: sortOrder === 'asc' ? 1 : -1 })
       .skip(skip)
       .limit(limit)
@@ -871,10 +807,16 @@ export class FormsService {
   private async getFormData(form: any): Promise<any> {
     // Always try file storage first (primary method)
     if (form.filePath) {
-      return await this.fileStorageService.retrieveFormData(
-        form.filePath,
-        form.isCompressed,
-      );
+      try {
+        return await this.fileStorageService.retrieveFormData(
+          form.filePath,
+          form.isCompressed,
+        );
+      } catch (error) {
+        // File may not exist (e.g. path from a different environment).
+        // Fall through to legacy fallbacks.
+        console.warn(`File storage read failed for ${form._id}, falling back:`, error.message);
+      }
     }
 
     // Fallback to other methods for backward compatibility
@@ -883,13 +825,6 @@ export class FormsService {
         return form.formData;
       case 'compressed':
         return this.decompressData(form.compressedData);
-      case 'chunked':
-        return await this.retrieveFromChunks(form.chunkedDataId);
-      case 'gridfs':
-        return await this.retrieveFromGridFS(form.gridFSFileId);
-      case 'external':
-        // Implement external storage retrieval
-        return null;
       default:
         return form.formData;
     }
@@ -1566,7 +1501,7 @@ export class FormsService {
     const forms = await this.formModel
       .find(queryFilter)
       .select(
-        '_id status formData.siteName formData.inspector formData.dateOfInspection createdAt',
+        '_id status formData.siteName formData.inspector formData.dateOfInspection createdAt filePath isCompressed',
       )
       .populate('userId', 'name email') // Only populate essential user fields
       .sort(sort)
@@ -1575,8 +1510,15 @@ export class FormsService {
       .exec();
 
     // Transform data to match the table structure
-    const inspectionList: InspectionListItemDto[] = forms.map((form) => {
-      const siteName = form.formData?.siteName || 'Unnamed Site';
+    const inspectionList: InspectionListItemDto[] = await Promise.all(forms.map(async (form) => {
+      // For old forms with no display fields in MongoDB, fall back to file storage
+      let displayData: any = form.formData;
+      if (!displayData?.siteName && (form as any).filePath) {
+        try {
+          displayData = await this.getFormData(form as any);
+        } catch (e) { /* keep displayData as is */ }
+      }
+      const siteName = displayData?.siteName || 'Unnamed Site';
       const siteInitial = siteName.charAt(0).toUpperCase();
 
       // Handle createdAt date safely
@@ -1594,13 +1536,13 @@ export class FormsService {
         id: form._id.toString(),
         siteName: siteName,
         siteId: form._id.toString(),
-        inspector: form.formData?.inspector || 'Not specified',
+        inspector: displayData?.inspector || 'Not specified',
         status: form.status || 'Draft',
-        dateOfInspection: form.formData?.dateOfInspection || 'Not specified',
+        dateOfInspection: displayData?.dateOfInspection || 'Not specified',
         createdDate: createdDate,
         siteInitial: siteInitial,
       };
-    });
+    }));
 
     // Calculate pagination info
     const totalPages = Math.ceil(total / limit);

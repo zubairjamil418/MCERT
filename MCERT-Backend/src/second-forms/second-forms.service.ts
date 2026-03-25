@@ -88,8 +88,14 @@ export class SecondFormsService {
       secondFormDocument.isCompressed = fileResult.compressed;
       secondFormDocument.fileSize = fileResult.fileSize;
       secondFormDocument.storageMethod = 'file';
-      
-      console.log(`Second form data stored as file: ${secondFormDocument.fileName} (${(fileResult.fileSize / 1024 / 1024).toFixed(2)}MB, compressed: ${fileResult.compressed})`);
+      // Save minimal display fields to MongoDB for fast list queries
+      secondFormDocument.formData = {
+        siteName: formData?.siteName,
+        inspector: formData?.inspector,
+        dateOfInspection: formData?.dateOfInspection,
+      };
+
+      console.log(`Second form data stored as file: ${secondFormDocument.fileName} (${(fileResult.fileSize / 1024 / 1024).toFixed(2)}MB, compressed: ${fileResult.compressed})`)
 
       // Save form without populate to avoid extra query
       const savedForm = await this.secondFormModel.create(secondFormDocument);
@@ -120,7 +126,7 @@ export class SecondFormsService {
   }
 
   async findAll(): Promise<any[]> {
-    const forms = await this.secondFormModel.find().populate('userId').exec();
+    const forms = await this.secondFormModel.find().populate('userId').lean().exec();
 
     // Process each form to include data from files
     for (const form of forms) {
@@ -143,15 +149,15 @@ export class SecondFormsService {
       throw new NotFoundException(`Second Form with ID ${id} not found`);
     }
 
-    // Retrieve form data from file (primary method)
+    // Retrieve form data from file (primary method).
+    // Use toObject() + spread so Mongoose schema casting does NOT strip extra fields.
     try {
-      form.formData = await this.getFormData(form);
+      const formData = await this.getFormData(form);
+      return { ...form.toObject(), formData };
     } catch (error) {
       console.error(`Error retrieving second form data for ${form._id}:`, error);
       throw new Error(`Failed to retrieve second form data: ${error.message}`);
     }
-
-    return form;
   }
 
   async findAllPaginated(
@@ -187,6 +193,7 @@ export class SecondFormsService {
     const formsQuery = this.secondFormModel
       .find(query)
       .populate('userId')
+      .lean()
       .sort(sort)
       .skip(skip)
       .limit(limit);
@@ -202,17 +209,17 @@ export class SecondFormsService {
         if (includeFormData) {
           try {
             form.formData = await this.getFormData(form);
-            return form.toObject();
+            return { ...form };
           } catch (error) {
             console.error(`Failed to retrieve data for second form ${form._id}:`, error);
             return {
-              ...form.toObject(),
+              ...form,
               formData: null,
               _error: 'Failed to retrieve second form data from storage',
             };
           }
         }
-        return form.toObject();
+        return { ...form };
       }),
     );
 
@@ -278,11 +285,10 @@ export class SecondFormsService {
     const forms = await this.secondFormModel
       .find({ userId: userId })
       .populate('userId')
+      .lean()
       .exec();
 
-    return forms.map((form) => {
-      return form.toObject();
-    });
+    return forms;
   }
 
   async findByUserIdPaginated(
@@ -324,6 +330,7 @@ export class SecondFormsService {
       .sort(sort)
       .skip(skip)
       .limit(limit)
+      .lean()
       .exec();
 
     // Process forms based on includeFormData flag
@@ -332,20 +339,20 @@ export class SecondFormsService {
         if (includeFormData) {
           try {
             form.formData = await this.getFormData(form);
-            return form.toObject();
+            return { ...form };
           } catch (error) {
             console.error(
               `Failed to retrieve data for second form ${form._id}:`,
               error,
             );
             return {
-              ...form.toObject(),
+              ...form,
               formData: null,
               _error: 'Failed to retrieve second form data from storage',
             };
           }
         }
-        return form.toObject();
+        return { ...form };
       }),
     );
 
@@ -416,6 +423,12 @@ export class SecondFormsService {
         fileSize: fileResult.fileSize,
         storageMethod: 'file',
         dataSize: payloadSize,
+        // Save minimal display fields to MongoDB for fast list queries
+        formData: {
+          siteName: updateSecondFormDto.formData?.siteName,
+          inspector: updateSecondFormDto.formData?.inspector,
+          dateOfInspection: updateSecondFormDto.formData?.dateOfInspection,
+        },
       };
     }
 
@@ -509,7 +522,7 @@ export class SecondFormsService {
       const { formIds } = bulkDeleteDto;
 
       // Get forms to clean up file storage
-      const forms = await this.secondFormModel.find({ _id: { $in: formIds } });
+      const forms = await this.secondFormModel.find({ _id: { $in: formIds } }).lean();
       
       // Clean up files
       for (const form of forms) {
@@ -561,6 +574,7 @@ export class SecondFormsService {
     const forms = await this.secondFormModel
       .find(query)
       .populate('userId')
+      .lean()
       .sort({ createdAt: sortOrder === 'asc' ? 1 : -1 })
       .skip(skip)
       .limit(limit)
@@ -581,9 +595,15 @@ export class SecondFormsService {
   private async getFormData(form: any): Promise<any> {
     // Always try file storage first (primary method)
     if (form.filePath) {
-      return await this.secondFileStorageService.retrieveFormData(form.filePath, form.isCompressed);
+      try {
+        return await this.secondFileStorageService.retrieveFormData(form.filePath, form.isCompressed);
+      } catch (error) {
+        // File may not exist (e.g. path from a different environment).
+        // Fall through to legacy fallbacks.
+        console.warn(`File storage read failed for ${form._id}, falling back:`, error.message);
+      }
     }
-    
+
     // Fallback to other methods for backward compatibility
     switch (form.storageMethod) {
       case 'direct':
@@ -739,7 +759,7 @@ export class SecondFormsService {
     // Execute optimized query - only fetch essential fields
     const forms = await this.secondFormModel
       .find(queryFilter)
-      .select('_id status formData.siteName formData.inspector formData.dateOfInspection createdAt')
+      .select('_id status formData.siteName formData.inspector formData.dateOfInspection createdAt filePath isCompressed')
       .populate('userId', 'name email') // Only populate essential user fields
       .sort(sort)
       .skip(skip)
@@ -747,8 +767,15 @@ export class SecondFormsService {
       .exec();
 
     // Transform data to match the table structure
-    const inspectionList: InspectionListItemDto[] = forms.map((form) => {
-      const siteName = form.formData?.siteName || 'Unnamed Site';
+    const inspectionList: InspectionListItemDto[] = await Promise.all(forms.map(async (form) => {
+      // For old forms with no display fields in MongoDB, fall back to file storage
+      let displayData: any = form.formData;
+      if (!displayData?.siteName && (form as any).filePath) {
+        try {
+          displayData = await this.getFormData(form as any);
+        } catch (e) { /* keep displayData as is */ }
+      }
+      const siteName = displayData?.siteName || 'Unnamed Site';
       const siteInitial = siteName.charAt(0).toUpperCase();
       
       // Handle createdAt date safely
@@ -766,13 +793,13 @@ export class SecondFormsService {
         id: form._id.toString(),
         siteName: siteName,
         siteId: form._id.toString(),
-        inspector: form.formData?.inspector || 'Not specified',
+        inspector: displayData?.inspector || 'Not specified',
         status: form.status || 'Draft',
-        dateOfInspection: form.formData?.dateOfInspection || 'Not specified',
+        dateOfInspection: displayData?.dateOfInspection || 'Not specified',
         createdDate: createdDate,
         siteInitial: siteInitial,
       };
-    });
+    }));
 
     // Calculate pagination info
     const totalPages = Math.ceil(total / limit);

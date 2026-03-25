@@ -1,22 +1,22 @@
-import React from "react";
+import React, { lazy } from "react";
 
-// Admin Imports
-import MainDashboard from "views/admin/default";
-import Files from "views/admin/files";
-import Calendar from "views/admin/calendar";
-import Profile from "views/admin/profile";
-import DataTables from "views/admin/tables";
-import Settings from "views/admin/settings";
-import Landing from "views/landing";
-import Sheets from "views/admin/sheets";
-import Forms from "views/admin/forms";
-import Forms2 from "views/admin/forms2";
-import Forms3 from "views/admin/forms3";
-import Analytics from "views/admin/analytics";
+// Admin Imports (lazy loaded for code splitting)
+const MainDashboard = lazy(() => import("views/admin/default"));
+const Files = lazy(() => import("views/admin/files"));
+const Calendar = lazy(() => import("views/admin/calendar"));
+const Profile = lazy(() => import("views/admin/profile"));
+const DataTables = lazy(() => import("views/admin/tables"));
+const Settings = lazy(() => import("views/admin/settings"));
+const Landing = lazy(() => import("views/landing"));
+const Sheets = lazy(() => import("views/admin/sheets"));
+const Forms = lazy(() => import("views/admin/forms"));
+const Forms2 = lazy(() => import("views/admin/forms2"));
+const Forms3 = lazy(() => import("views/admin/forms3"));
+const Analytics = lazy(() => import("views/admin/analytics"));
 
-// Auth Imports
-import SignIn from "views/auth/SignIn";
-import SignUp from "views/auth/SignUp";
+// Auth Imports (lazy loaded)
+const SignIn = lazy(() => import("views/auth/SignIn"));
+const SignUp = lazy(() => import("views/auth/SignUp"));
 
 // Icon Imports
 import {

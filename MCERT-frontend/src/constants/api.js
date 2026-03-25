@@ -12,6 +12,9 @@ export const FORMS_API = {
   // Get single form by ID
   GET_BY_ID: (id) => `${API_BASE_URL}forms/${id}`,
 
+  // Get single form by ID with full form data (retrieved from file storage)
+  GET_BY_ID_WITH_DATA: (id) => `${API_BASE_URL}forms/${id}/data`,
+
   // Create new form
   CREATE: `${API_BASE_URL}forms`,
 
@@ -36,6 +39,9 @@ export const SECOND_FORMS_API = {
   // Get single form by ID
   GET_BY_ID: (id) => `${API_BASE_URL}second-forms/${id}`,
 
+  // Get single form by ID with full form data (retrieved from file storage)
+  GET_BY_ID_WITH_DATA: (id) => `${API_BASE_URL}second-forms/${id}/data`,
+
   // Create new form
   CREATE: `${API_BASE_URL}second-forms`,
 
@@ -59,6 +65,9 @@ export const THIRD_FORMS_API = {
 
   // Get single form by ID
   GET_BY_ID: (id) => `${API_BASE_URL}third-forms/${id}`,
+
+  // Get single form by ID with full form data (retrieved from file storage)
+  GET_BY_ID_WITH_DATA: (id) => `${API_BASE_URL}third-forms/${id}/data`,
 
   // Create new form
   CREATE: `${API_BASE_URL}third-forms`,

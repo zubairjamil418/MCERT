@@ -26,6 +26,7 @@ import FormModal from "../../../components/modals/FormModal";
 import AddValueModal from "../../../components/modals/AddValueModal";
 import UnsavedChangesModal from "../../../components/modals/UnsavedChangesModal";
 import ImageEditorModal from "../../../components/modals/ImageEditorModal";
+import ConfirmModal from "../../../components/modals/ConfirmModal";
 import FormsTable from "../../../components/tables/FormsTable";
 
 // Simple Button component since it doesn't exist in the project
@@ -161,6 +162,9 @@ const FormPage = () => {
   const [isDeletingForm, setIsDeletingForm] = useState(false);
   const [isCreatingForm, setIsCreatingForm] = useState(false);
   const [error, setError] = useState(null);
+  const [selectedForms, setSelectedForms] = useState(new Set());
+  const [confirmModal, setConfirmModal] = useState({ isOpen: false, type: '', ids: [], isLoading: false });
+  const [successMessage, setSuccessMessage] = useState('');
 
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
@@ -344,7 +348,13 @@ const FormPage = () => {
               hasPrev: paginationData.hasPrev,
             });
 
-            setForms(result.data.data);
+            // Flatten formData fields to top level for table display
+            const flattenedForms = (result.data.data || []).map((form) => ({
+              ...form,
+              ...(form.formData || {}),
+            }));
+
+            setForms(flattenedForms);
             setTotalPages(totalPagesFromAPI);
             setTotalItems(totalItemsFromAPI);
             setCurrentPage(currentPageFromAPI);
@@ -465,16 +475,13 @@ const FormPage = () => {
     try {
       setIsLoadingFormById(true);
 
-      // Get token from localStorage or context if you have authentication
-      const token = localStorage.getItem("userResposne");
-      const result = await formsService.getFormById(id, token);
-
-      console.log("Edit form result:", result); // Debug log
+      const token = localStorage.getItem("token") || localStorage.getItem("userResposne");
+      // Use getFormWithData to fetch actual form data from file storage
+      const result = await formsService.getFormWithData(id, token);
 
       if (result.success && result.data) {
-        console.log("Form data to edit:", result.data); // Debug log
-        // Handle nested response structure
-        const responseData = result.data.data || result.data;
+        // formData is the actual stored form data (from file storage)
+        const responseData = result.data.formData || result.data.data || result.data;
         const mappedFormData = mapFormDataFromAPI(responseData);
         setFormData(mappedFormData);
         setOriginalFormData(mappedFormData); // Track original data for unsaved changes
@@ -494,36 +501,8 @@ const FormPage = () => {
     }
   };
 
-  const handleDeleteForm = async (id) => {
-    if (
-      !window.confirm(
-        "Are you sure you want to delete this form? This action cannot be undone."
-      )
-    ) {
-      return;
-    }
-
-    try {
-      setIsDeletingForm(true);
-
-      const token = localStorage.getItem("userResposne");
-      const result = await formsService.deleteForm(id, token);
-      console.log("result", result);
-      if (
-        result.error ===
-          "Failed to execute 'json' on 'Response': Unexpected end of JSON input" ||
-        result.success === true
-      ) {
-        setForms(forms.filter((form) => form._id !== id));
-        alert(getSuccessMessage("delete"));
-      } else {
-        alert(`Error: ${result.error || "Failed to delete form"}`);
-      }
-    } catch (error) {
-      alert(`Error: ${handleApiError(error, "Failed to delete form")}`);
-    } finally {
-      setIsDeletingForm(false);
-    }
+  const handleDeleteForm = (id) => {
+    setConfirmModal({ isOpen: true, type: 'delete', ids: [id], isLoading: false });
   };
 
   // Custom input change handler that triggers background updates
@@ -1002,38 +981,80 @@ const FormPage = () => {
   };
 
   // Download individual form function
-  const handleDownloadForm = async (formId) => {
-    try {
-      setDownloadingFormId(formId);
+  const handleDownloadForm = (formId) => {
+    setConfirmModal({ isOpen: true, type: 'download', ids: [formId], isLoading: false });
+  };
 
-      // First, fetch the form data by ID from the API
-      const token = localStorage.getItem("token");
-      const formResponse = await formsService.getFormById(formId, token);
+  const handleConfirmAction = async () => {
+    const { type, ids } = confirmModal;
+    setConfirmModal((prev) => ({ ...prev, isLoading: true }));
 
-      if (!formResponse.success) {
-        alert(`Error fetching form data: ${formResponse.error}`);
-        return;
+    if (type === 'delete') {
+      setIsDeletingForm(true);
+      try {
+        const token = localStorage.getItem("userResposne");
+        for (const id of ids) {
+          const result = await formsService.deleteForm(id, token);
+          if (
+            result.success === true ||
+            result.error === "Failed to execute 'json' on 'Response': Unexpected end of JSON input"
+          ) {
+            setForms((prev) => prev.filter((f) => (f._id || f.id) !== id));
+            setSelectedForms((prev) => { const n = new Set(prev); n.delete(id); return n; });
+          }
+        }
+        const msg = ids.length === 1 ? 'Form deleted successfully.' : `${ids.length} forms deleted successfully.`;
+        setSuccessMessage(msg);
+        setTimeout(() => setSuccessMessage(''), 4000);
+      } catch (err) {
+        console.error('Error deleting form(s):', err);
+      } finally {
+        setIsDeletingForm(false);
+        await fetchForms();
       }
-
-      const form = formResponse.data;
-
-      // Convert base64 data back to File objects for document generation
-      const processedFormData = convertBase64ToFiles(form.formData);
-
-      // Generate and download the document for the specific form
-      const result = await generateMCLERTSReport(processedFormData);
-
-      if (result.success) {
-        alert("Form downloaded successfully!");
-      } else {
-        alert(`Error: ${result.message}`);
+    } else if (type === 'download') {
+      try {
+        const token = localStorage.getItem("token");
+        for (const formId of ids) {
+          setDownloadingFormId(formId);
+          const formResponse = await formsService.getFormWithData(formId, token);
+          if (!formResponse.success) continue;
+          const processedFormData = convertBase64ToFiles(formResponse.data.formData);
+          await generateMCLERTSReport(processedFormData);
+        }
+        const msg = ids.length === 1 ? 'Form downloaded successfully!' : `${ids.length} forms downloaded successfully!`;
+        setSuccessMessage(msg);
+        setTimeout(() => setSuccessMessage(''), 4000);
+        setSelectedForms(new Set()); // Clear selection after download
+      } catch (err) {
+        console.error('Error downloading form(s):', err);
+      } finally {
+        setDownloadingFormId(null);
       }
-    } catch (error) {
-      console.error("Error downloading form:", error);
-      alert("An error occurred while downloading the form. Please try again.");
-    } finally {
-      setDownloadingFormId(null);
     }
+    setConfirmModal((prev) => ({ ...prev, isOpen: false, isLoading: false }));
+  };
+
+  const handleToggleSelect = (id) => {
+    setSelectedForms((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
+
+  const handleToggleSelectAll = () => {
+    if (selectedForms.size === forms.length && forms.length > 0) {
+      setSelectedForms(new Set());
+    } else {
+      setSelectedForms(new Set(forms.map((f) => f._id || f.id)));
+    }
+  };
+
+  const handleBulkDeleteClick = () => {
+    if (selectedForms.size === 0) return;
+    setConfirmModal({ isOpen: true, type: 'delete', ids: Array.from(selectedForms), isLoading: false });
   };
 
   // Modal functions
@@ -1177,10 +1198,19 @@ const FormPage = () => {
       console.log("=== END DEBUG ===");
 
       // Update form data with extracted values
-      setFormData((prev) => ({
-        ...prev,
-        ...mappedData,
-      }));
+      // IMPORTANT: Preserve permanent fields (field1, field2, field3) - they should never be overwritten by Excel
+      setFormData((prev) => {
+        const { field1, field2, field3, ...excelMappedData } = mappedData;
+
+        return {
+          ...prev,
+          ...excelMappedData,
+          // Explicitly preserve permanent fields from previous state
+          field1: prev.field1,
+          field2: prev.field2,
+          field3: prev.field3,
+        };
+      });
 
       // // Show success message
       // const extractedFields = Object.keys(mappedData).filter(
@@ -1265,6 +1295,19 @@ const FormPage = () => {
         </div>
       </div>
 
+      {/* Success Notification */}
+      {successMessage && (
+        <div className="flex items-center justify-between rounded-lg bg-green-50 p-4 text-green-700 dark:bg-green-900/20 dark:text-green-400">
+          <div className="flex items-center">
+            <svg className="mr-2 h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+            </svg>
+            <span>{successMessage}</span>
+          </div>
+          <button onClick={() => setSuccessMessage('')} className="ml-4 text-green-600 hover:text-green-800 dark:hover:text-green-200">✕</button>
+        </div>
+      )}
+
       {/* Forms Table */}
       <FormsTable
         isLoadingForms={isLoadingForms}
@@ -1287,6 +1330,10 @@ const FormPage = () => {
         hasNext={hasNext}
         handleNextPage={handleNextPage}
         handleAddNewForm={handleAddNewForm}
+        selectedIds={selectedForms}
+        onToggleSelect={handleToggleSelect}
+        onToggleSelectAll={handleToggleSelectAll}
+        onBulkDelete={handleBulkDeleteClick}
       />
 
       {/* Form Modal */}
@@ -1357,6 +1404,30 @@ const FormPage = () => {
         imageFile={imageEditorModal.file}
         onSave={handleSaveEditedImage}
         onCancel={handleCancelImageEditor}
+      />
+
+      {/* Confirm Action Modal */}
+      <ConfirmModal
+        isOpen={confirmModal.isOpen}
+        onClose={() => !confirmModal.isLoading && setConfirmModal((prev) => ({ ...prev, isOpen: false }))}
+        onConfirm={handleConfirmAction}
+        title={
+          confirmModal.type === 'delete'
+            ? confirmModal.ids.length > 1 ? 'Delete Forms' : 'Delete Form'
+            : confirmModal.ids.length > 1 ? 'Download Forms' : 'Download Form'
+        }
+        message={
+          confirmModal.type === 'delete'
+            ? confirmModal.ids.length > 1
+              ? `Are you sure you want to delete ${confirmModal.ids.length} forms? This action cannot be undone.`
+              : 'Are you sure you want to delete this form? This action cannot be undone.'
+            : confirmModal.ids.length > 1
+              ? `Download ${confirmModal.ids.length} selected forms?`
+              : 'Download this form?'
+        }
+        confirmLabel={confirmModal.type === 'delete' ? 'Delete' : 'Download'}
+        type={confirmModal.type === 'delete' ? 'danger' : 'success'}
+        isLoading={confirmModal.isLoading}
       />
     </div>
   );

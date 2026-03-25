@@ -145,6 +145,26 @@ import { saveAs } from "file-saver";
 import ImageModule from "docxtemplater-image-module-free";
 
 // --- helpers ---
+
+// Normalize PizZip entry paths from backslash (Windows) to forward-slash.
+const normalizeZipPaths = (zip) => {
+  const entries = Object.keys(zip.files);
+  for (const entry of entries) {
+    if (entry.includes("\\")) {
+      const fwdEntry = entry.split("\\").join("/");
+      const zipEntry = zip.files[entry];
+      if (zipEntry && typeof zipEntry === "object") {
+        zipEntry.name = fwdEntry;
+      }
+      if (!zip.files[fwdEntry]) {
+        zip.files[fwdEntry] = zipEntry;
+      }
+      delete zip.files[entry];
+    }
+  }
+  return zip;
+};
+
 const fileToDataURL = (file) =>
   new Promise((resolve, reject) => {
     const fr = new FileReader();
@@ -328,7 +348,7 @@ export const generateDocumentFromTemplate = async (
     const res = await fetch("/templates/mclerts-template-2.docx");
     if (!res.ok)
       throw new Error("Template not found at /templates/mclerts-template.docx");
-    const zip = new PizZip(await res.arrayBuffer());
+    const zip = normalizeZipPaths(new PizZip(await res.arrayBuffer()));
 
     // Image module: value is a dataURL string
     const imageModule = new ImageModule({
@@ -352,8 +372,43 @@ export const generateDocumentFromTemplate = async (
       modules: [imageModule],
     });
 
-    doc.setData(formData);
-    doc.render();
+    try {
+      doc.setData(formData);
+      doc.render();
+    } catch (renderError) {
+      console.error("Docxtemplater render error:", {
+        name: renderError?.name,
+        message: renderError?.message,
+        properties: renderError?.properties,
+      });
+      // Fallback: fetch a FRESH template and retry without image data
+      try {
+        const retryRes = await fetch("/templates/mclerts-template-2.docx");
+        if (!retryRes.ok) throw renderError;
+        const freshZip = normalizeZipPaths(new PizZip(await retryRes.arrayBuffer()));
+        const retryDoc = new Docxtemplater(freshZip, {
+          paragraphLoop: true,
+          linebreaks: true,
+          modules: [imageModule],
+        });
+        const clone = Object.fromEntries(
+          Object.entries(formData).map(([k, v]) => [
+            k,
+            k.toLowerCase().includes("image") && !k.endsWith("Caption") ? undefined : v,
+          ])
+        );
+        retryDoc.setData(clone);
+        retryDoc.render();
+        const retryOut = retryDoc.getZip().generate({
+          type: "blob",
+          mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        });
+        saveAs(retryOut, fileName);
+        return { success: true, message: "Rendered without images due to template issue" };
+      } catch (retryError) {
+        throw renderError;
+      }
+    }
 
     const out = doc.getZip().generate({
       type: "blob",
