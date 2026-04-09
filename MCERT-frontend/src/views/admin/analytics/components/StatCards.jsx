@@ -24,13 +24,13 @@ const StatCards = ({ stats, isLoading }) => {
       />
       <Widget
         icon={<MdPending className="h-7 w-7" />}
-        title="Pending"
-        subtitle={String(stats?.pending ?? 0)}
+        title="Draft"
+        subtitle={String(stats?.draft ?? 0)}
       />
       <Widget
         icon={<MdCheckCircle className="h-7 w-7" />}
-        title="Submitted"
-        subtitle={String(stats?.submitted ?? 0)}
+        title="Completed"
+        subtitle={String(stats?.completed ?? 0)}
       />
       <Widget
         icon={<MdToday className="h-7 w-7" />}

@@ -1,4 +1,4 @@
-import React from "react";
+﻿import React from "react";
 
 // Simple Button component
 const Button = ({
@@ -69,7 +69,7 @@ const FormModal2 = ({
       <div className="max-h-[90vh] w-full max-w-6xl overflow-y-auto rounded-lg bg-white p-6">
         <div className="mb-6 flex items-center justify-between">
           <h2 className="text-2xl font-bold text-gray-800 dark:text-white">
-            V-Notch Weirs — {editingFormId ? "Edit" : "New Entry"}
+            V-Notch Weirs - {editingFormId ? "Edit" : "New Entry"}
           </h2>
           <div className="flex gap-2">
             <label className="cursor-pointer rounded-lg border border-gray-300 bg-white px-4 py-2 text-gray-700 hover:bg-gray-50">
@@ -79,14 +79,12 @@ const FormModal2 = ({
                 onChange={handleExcelUpload}
                 className="hidden"
               />
-              📄 Upload Excel File
+              Upload Excel File
             </label>
             <Button
               onClick={closeModal}
               className="rounded-md bg-gray-200 px-3 py-2 text-gray-700 hover:bg-gray-300"
-            >
-              ✕
-            </Button>
+            >X</Button>
           </div>
         </div>
 
@@ -95,7 +93,7 @@ const FormModal2 = ({
           <div
             className={`mb-4 rounded-lg p-4 ${
               compressionStatus === "compressing"
-                ? "border border-blue-200 bg-blue-50"
+                ? "border border-brand-200 bg-brand-50"
                 : compressionStatus === "completed"
                 ? "border border-green-200 bg-green-50"
                 : compressionStatus === "error"
@@ -106,7 +104,7 @@ const FormModal2 = ({
             <div className="flex items-center space-x-2">
               {compressionStatus === "compressing" && (
                 <svg
-                  className="h-4 w-4 animate-spin text-blue-500"
+                  className="h-4 w-4 animate-spin text-brand-500"
                   xmlns="http://www.w3.org/2000/svg"
                   fill="none"
                   viewBox="0 0 24 24"
@@ -159,7 +157,7 @@ const FormModal2 = ({
               <span
                 className={`text-sm font-medium ${
                   compressionStatus === "compressing"
-                    ? "text-blue-700"
+                    ? "text-brand-700"
                     : compressionStatus === "completed"
                     ? "text-green-700"
                     : compressionStatus === "error"
@@ -188,7 +186,7 @@ const FormModal2 = ({
                       {(compressionProgress.originalSize / 1024 / 1024).toFixed(
                         1
                       )}
-                      MB →{" "}
+                      MB â†’{" "}
                       {(
                         compressionProgress.compressedSize /
                         1024 /
@@ -218,7 +216,7 @@ const FormModal2 = ({
                   name="reportPreparedBy"
                   value={formData.reportPreparedBy}
                   onChange={handleInputChangeWithBackgroundUpdate}
-                  className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
                   placeholder="Siris Flow Inspections Ltd"
                 />
                 <div className="mt-1 text-xs text-gray-500">
@@ -255,7 +253,7 @@ const FormModal2 = ({
                   <button
                     type="button"
                     onClick={() => openModal("inspector")}
-                    className="flex h-10 w-10 items-center justify-center rounded-lg border border-gray-300 bg-white text-gray-600 hover:bg-gray-50 hover:text-blue-600"
+                    className="flex h-10 w-10 items-center justify-center rounded-lg border border-gray-300 bg-white text-gray-600 hover:bg-gray-50 hover:text-brand-600"
                     title="Add new inspector"
                   >
                     <svg
@@ -311,7 +309,7 @@ const FormModal2 = ({
                   <button
                     type="button"
                     onClick={() => openModal("consentPermitHolder")}
-                    className="flex h-10 w-10 items-center justify-center rounded-lg border border-gray-300 bg-white text-gray-600 hover:bg-gray-50 hover:text-blue-600"
+                    className="flex h-10 w-10 items-center justify-center rounded-lg border border-gray-300 bg-white text-gray-600 hover:bg-gray-50 hover:text-brand-600"
                     title="Add new consent/permit holder"
                   >
                     <svg
@@ -339,7 +337,7 @@ const FormModal2 = ({
                   name="consentPermitNo"
                   value={formData.consentPermitNo}
                   onChange={handleInputChangeWithBackgroundUpdate}
-                  className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
                   placeholder="Enter consent/permit number"
                 />
               </div>
@@ -352,7 +350,7 @@ const FormModal2 = ({
                   name="inspectionReportNo"
                   value={formData.inspectionReportNo}
                   onChange={handleInputChangeWithBackgroundUpdate}
-                  className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
                   placeholder="Enter inspection report number"
                 />
               </div>
@@ -365,7 +363,7 @@ const FormModal2 = ({
                   name="dateOfInspection"
                   value={formData.dateOfInspection}
                   onChange={handleInputChangeWithBackgroundUpdate}
-                  className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
                 />
               </div>
               <div>
@@ -377,7 +375,7 @@ const FormModal2 = ({
                   name="statementOfCompliance"
                   value={formData.statementOfCompliance}
                   onChange={handleInputChangeWithBackgroundUpdate}
-                  className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
                   placeholder="Statement of compliance"
                 />
                 <div className="mt-1 text-xs text-gray-500">
@@ -393,8 +391,8 @@ const FormModal2 = ({
                   name="uncertainty"
                   value={formData.uncertainty}
                   onChange={handleInputChangeWithBackgroundUpdate}
-                  className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-                  placeholder="e.g., ±3.03% (from Uncertainty Sheet F104)"
+                  className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
+                  placeholder="e.g., Â±3.03% (from Uncertainty Sheet F104)"
                 />
               </div>
             </div>
@@ -415,7 +413,7 @@ const FormModal2 = ({
                   name="siteName"
                   value={formData.siteName}
                   onChange={handleInputChangeWithBackgroundUpdate}
-                  className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
                   placeholder="linked to spreadsheet / DB (demo)"
                 />
               </div>
@@ -456,7 +454,7 @@ const FormModal2 = ({
                   value={formData.siteAddress}
                   onChange={handleInputChangeWithBackgroundUpdate}
                   rows="3"
-                  className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
                   placeholder="text field"
                 />
               </div>
@@ -469,7 +467,7 @@ const FormModal2 = ({
                   name="siteRefPostcode"
                   value={formData.siteRefPostcode}
                   onChange={handleInputChangeWithBackgroundUpdate}
-                  className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
                 />
               </div>
               <div>
@@ -481,7 +479,7 @@ const FormModal2 = ({
                   name="irishGridRef"
                   value={formData.irishGridRef}
                   onChange={handleInputChangeWithBackgroundUpdate}
-                  className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
                 />
               </div>
             </div>
@@ -505,7 +503,7 @@ const FormModal2 = ({
                   name="secondaryDeviceType"
                   value={formData.secondaryDeviceType}
                   onChange={handleInputChangeWithBackgroundUpdate}
-                  className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
                   placeholder="e.g., Siemens Hydroranger LT500 (from Excel I10 & I11)"
                 />
               </div>
@@ -521,7 +519,7 @@ const FormModal2 = ({
                   name="flowmeterSensorSerial"
                   value={formData.flowmeterSensorSerial}
                   onChange={handleInputChangeWithBackgroundUpdate}
-                  className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
                   placeholder="e.g., YSN/MN138215937 (from Excel I12)"
                 />
               </div>
@@ -537,7 +535,7 @@ const FormModal2 = ({
                   name="flowmeterTransmitterSerial"
                   value={formData.flowmeterTransmitterSerial}
                   onChange={handleInputChangeWithBackgroundUpdate}
-                  className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
                   placeholder="e.g., PBD-S7086053 (from Excel I13)"
                 />
               </div>
@@ -553,7 +551,7 @@ const FormModal2 = ({
                   name="niwAssetId"
                   value={formData.niwAssetId}
                   onChange={handleInputChangeWithBackgroundUpdate}
-                  className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
                   placeholder="e.g., 0324638 (manually enter or from DB)"
                 />
               </div>
@@ -575,7 +573,7 @@ const FormModal2 = ({
                   value={formData.siteDescription}
                   onChange={handleInputChangeWithBackgroundUpdate}
                   rows="4"
-                  className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
                   placeholder="manually entered"
                 />
               </div>
@@ -588,7 +586,7 @@ const FormModal2 = ({
                   value={formData.flowmeterLocation}
                   onChange={handleInputChangeWithBackgroundUpdate}
                   rows="4"
-                  className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
                   placeholder="manually entered"
                 />
               </div>
@@ -633,7 +631,7 @@ const FormModal2 = ({
                     name="wocNumber"
                     value={formData.wocNumber || ""}
                     onChange={handleInputChangeWithBackgroundUpdate}
-                    className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                    className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
                     placeholder="e.g., 6033/2007 (from Excel C5)"
                   />
                 </div>
@@ -649,8 +647,8 @@ const FormModal2 = ({
                     name="dryW"
                     value={formData.dryW}
                     onChange={handleInputChangeWithBackgroundUpdate}
-                    className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-                    placeholder="e.g., 211 m³/day (from Excel H6)"
+                    className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
+                    placeholder="e.g., 211 mÂ³/day (from Excel H6)"
                   />
                 </div>
                 <div>
@@ -665,8 +663,8 @@ const FormModal2 = ({
                     name="maxD"
                     value={formData.maxD}
                     onChange={handleInputChangeWithBackgroundUpdate}
-                    className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-                    placeholder="e.g., 211 m³/day (from Excel D6)"
+                    className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
+                    placeholder="e.g., 211 mÂ³/day (from Excel D6)"
                   />
                 </div>
                 <div>
@@ -681,7 +679,7 @@ const FormModal2 = ({
                     name="maxFFT"
                     value={formData.maxFFT}
                     onChange={handleInputChangeWithBackgroundUpdate}
-                    className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                    className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
                     placeholder="e.g., 2.44 l/s (from Excel I5)"
                   />
                 </div>
@@ -697,7 +695,7 @@ const FormModal2 = ({
                     name="qmaxF"
                     value={formData.qmaxF}
                     onChange={handleInputChangeWithBackgroundUpdate}
-                    className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                    className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
                     placeholder="e.g., 10.00 l/s (from Excel I4)"
                   />
                 </div>
@@ -723,7 +721,7 @@ const FormModal2 = ({
                   name="field1"
                   value={formData.field1}
                   onChange={handleInputChangeWithBackgroundUpdate}
-                  className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
                   placeholder="Secondary verification details"
                 />
                 <div className="mt-1 text-xs text-gray-500">
@@ -739,7 +737,7 @@ const FormModal2 = ({
                   name="field2"
                   value={formData.field2}
                   onChange={handleInputChangeWithBackgroundUpdate}
-                  className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
                   placeholder="MCERTS certification details"
                 />
                 <div className="mt-1 text-xs text-gray-500">
@@ -755,7 +753,7 @@ const FormModal2 = ({
                   value={formData.field3}
                   onChange={handleInputChangeWithBackgroundUpdate}
                   rows="3"
-                  className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
                   placeholder="Site maintenance arrangements"
                 />
                 <div className="mt-1 text-xs text-gray-500">
@@ -820,7 +818,7 @@ const FormModal2 = ({
                     <button
                       type="button"
                       onClick={() => openModal("references")}
-                      className="flex w-full items-center justify-center rounded-md bg-blue-50 px-3 py-2 text-sm text-blue-600 hover:bg-blue-100"
+                      className="flex w-full items-center justify-center rounded-md bg-brand-50 px-3 py-2 text-sm text-brand-600 hover:bg-brand-100"
                       title="Add new reference"
                     >
                       <svg
@@ -865,7 +863,7 @@ const FormModal2 = ({
                     value={formData.siteProcessDescription}
                     onChange={handleInputChangeWithBackgroundUpdate}
                     rows="4"
-                    className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                    className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
                     placeholder="Flows enter the works via gravity, undergoing screening and grit removal. This is followed by passage through a greater than Formula A overspill weir. Flows are quantified by an FFT rectangular flume flow measurement system. After initial measurement, flows proceed through primary settlement and aerated reed beds. Treated water is discharged under gravity to the watercourse through a Final Effluent thin plate V-notch weir flow measurement system. Any storm water that spills from the Formula A overspill weir is directed directly to the watercourse, indicating no storm storage on site. Sludge generated from the treatment process is tankered from site. Return liquors and site drainage are recycled back into the treatment process. Wash water used on site is Final Effluent, which is drawn upstream from the Final Effluent flow measurement system. The Final Effluent V-Notch weir & associated flow meter display are used to certify the works under NIW's FComp scheme."
                   />
                 </div>
@@ -881,7 +879,7 @@ const FormModal2 = ({
                     }
                     accept="image/*"
                     multiple
-                    className="block w-full text-sm text-gray-500 file:mr-4 file:rounded-lg file:border-0 file:bg-blue-50 file:px-4 file:py-2 file:text-sm file:font-medium file:text-blue-700 hover:file:bg-blue-100"
+                    className="block w-full text-sm text-gray-500 file:mr-4 file:rounded-lg file:border-0 file:bg-brand-50 file:px-4 file:py-2 file:text-sm file:font-medium file:text-brand-700 hover:file:bg-brand-100"
                   />
                   <div className="mt-1 text-xs text-gray-500">
                     Upload multiple site process and schematic images (maximum 5
@@ -948,7 +946,7 @@ const FormModal2 = ({
                                     )
                                   }
                                   placeholder="Add caption"
-                                  className="mt-2 w-full rounded border border-gray-300 px-2 py-1 text-xs focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                  className="mt-2 w-full rounded border border-gray-300 px-2 py-1 text-xs focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
                                 />
                                 <button
                                   type="button"
@@ -998,7 +996,7 @@ const FormModal2 = ({
                     value={formData.aerialViewDescription}
                     onChange={handleInputChangeWithBackgroundUpdate}
                     rows="4"
-                    className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                    className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
                     placeholder="The Final Effluent thin plate V-notch weir and associated flow meter are situated downstream of the treatment process and are correctly located to ensure representative measurement of the total daily volume of treated effluent being discharged to the watercourse. There is no double counting or undercounting of flows at this location. There is a drain down valve on the carrier plate for the V-notch weir. At the time of the inspection the valve was 100% closed and is to remain closed at all times. Use of the drain down valves should be covered in the quality documentation."
                   />
                 </div>
@@ -1014,7 +1012,7 @@ const FormModal2 = ({
                     }
                     accept="image/*"
                     multiple
-                    className="block w-full text-sm text-gray-500 file:mr-4 file:rounded-lg file:border-0 file:bg-blue-50 file:px-4 file:py-2 file:text-sm file:font-medium file:text-blue-700 hover:file:bg-blue-100"
+                    className="block w-full text-sm text-gray-500 file:mr-4 file:rounded-lg file:border-0 file:bg-brand-50 file:px-4 file:py-2 file:text-sm file:font-medium file:text-brand-700 hover:file:bg-brand-100"
                   />
                   <div className="mt-1 text-xs text-gray-500">
                     Upload multiple aerial view images (maximum 5 files). Images
@@ -1080,7 +1078,7 @@ const FormModal2 = ({
                                     )
                                   }
                                   placeholder="Add caption"
-                                  className="mt-2 w-full rounded border border-gray-300 px-2 py-1 text-xs focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                  className="mt-2 w-full rounded border border-gray-300 px-2 py-1 text-xs focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
                                 />
                                 <button
                                   type="button"
@@ -1134,7 +1132,7 @@ const FormModal2 = ({
                     value={formData.primaryDeviceDescription}
                     onChange={handleInputChangeWithBackgroundUpdate}
                     rows="4"
-                    className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                    className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
                     placeholder="Enter description for the primary device..."
                   />
                 </div>
@@ -1152,7 +1150,7 @@ const FormModal2 = ({
                     }
                     accept="image/*"
                     multiple
-                    className="block w-full text-sm text-gray-500 file:mr-4 file:rounded-lg file:border-0 file:bg-blue-50 file:px-4 file:py-2 file:text-sm file:font-medium file:text-blue-700 hover:file:bg-blue-100"
+                    className="block w-full text-sm text-gray-500 file:mr-4 file:rounded-lg file:border-0 file:bg-brand-50 file:px-4 file:py-2 file:text-sm file:font-medium file:text-brand-700 hover:file:bg-brand-100"
                   />
                   <div className="mt-1 text-xs text-gray-500">
                     Upload multiple primary device images (maximum 5 files).
@@ -1204,7 +1202,7 @@ const FormModal2 = ({
                                     )
                                   }
                                   placeholder="Add caption"
-                                  className="mt-2 w-full rounded border border-gray-300 px-2 py-1 text-xs focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                  className="mt-2 w-full rounded border border-gray-300 px-2 py-1 text-xs focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
                                 />
                                 <button
                                   type="button"
@@ -1254,7 +1252,7 @@ const FormModal2 = ({
                     value={formData.secondaryDeviceDescription}
                     onChange={handleInputChangeWithBackgroundUpdate}
                     rows="4"
-                    className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                    className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
                     placeholder="Enter description for the secondary device..."
                   />
                 </div>
@@ -1272,7 +1270,7 @@ const FormModal2 = ({
                     }
                     accept="image/*"
                     multiple
-                    className="block w-full text-sm text-gray-500 file:mr-4 file:rounded-lg file:border-0 file:bg-blue-50 file:px-4 file:py-2 file:text-sm file:font-medium file:text-blue-700 hover:file:bg-blue-100"
+                    className="block w-full text-sm text-gray-500 file:mr-4 file:rounded-lg file:border-0 file:bg-brand-50 file:px-4 file:py-2 file:text-sm file:font-medium file:text-brand-700 hover:file:bg-brand-100"
                   />
                   <div className="mt-1 text-xs text-gray-500">
                     Upload multiple secondary device images (maximum 5 files).
@@ -1325,7 +1323,7 @@ const FormModal2 = ({
                                     )
                                   }
                                   placeholder="Add caption"
-                                  className="mt-2 w-full rounded border border-gray-300 px-2 py-1 text-xs focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                  className="mt-2 w-full rounded border border-gray-300 px-2 py-1 text-xs focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
                                 />
                                 <button
                                   type="button"
@@ -1379,7 +1377,7 @@ const FormModal2 = ({
                     }
                     accept="image/*"
                     multiple
-                    className="block w-full text-sm text-gray-500 file:mr-4 file:rounded-lg file:border-0 file:bg-blue-50 file:px-4 file:py-2 file:text-sm file:font-medium file:text-blue-700 hover:file:bg-blue-100"
+                    className="block w-full text-sm text-gray-500 file:mr-4 file:rounded-lg file:border-0 file:bg-brand-50 file:px-4 file:py-2 file:text-sm file:font-medium file:text-brand-700 hover:file:bg-brand-100"
                   />
                   <div className="mt-1 text-xs text-gray-500">
                     Upload multiple verification images (maximum 5 files).
@@ -1430,7 +1428,7 @@ const FormModal2 = ({
                                     )
                                   }
                                   placeholder="Add caption"
-                                  className="mt-2 w-full rounded border border-gray-300 px-2 py-1 text-xs focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                  className="mt-2 w-full rounded border border-gray-300 px-2 py-1 text-xs focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
                                 />
                                 <button
                                   type="button"
@@ -1474,8 +1472,8 @@ const FormModal2 = ({
                       name="verificationCalibrationReference"
                       value={formData.verificationCalibrationReference}
                       onChange={handleInputChangeWithBackgroundUpdate}
-                      className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-                      placeholder="e.g., Blue Collar 212mm (±1mm)"
+                      className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
+                      placeholder="e.g., Blue Collar 212mm (Â±1mm)"
                     />
                   </div>
                   <div>
@@ -1490,7 +1488,7 @@ const FormModal2 = ({
                       name="verificationPlateMeasurement"
                       value={formData.verificationPlateMeasurement}
                       onChange={handleInputChangeWithBackgroundUpdate}
-                      className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                      className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
                       placeholder="e.g., 212mm (from Excel I26 & I27)"
                     />
                   </div>
@@ -1506,7 +1504,7 @@ const FormModal2 = ({
                       name="verificationInstrumentDisplay"
                       value={formData.verificationInstrumentDisplay}
                       onChange={handleInputChangeWithBackgroundUpdate}
-                      className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                      className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
                       placeholder="e.g., 212.55mm (from Excel E19 & E21)"
                     />
                   </div>
@@ -1522,7 +1520,7 @@ const FormModal2 = ({
                       name="verificationHeadError"
                       value={formData.verificationHeadError}
                       onChange={handleInputChangeWithBackgroundUpdate}
-                      className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                      className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
                       placeholder="e.g., 0.55mm"
                     />
                   </div>
@@ -1538,7 +1536,7 @@ const FormModal2 = ({
                       name="verificationRepeatabilityError"
                       value={formData.verificationRepeatabilityError}
                       onChange={handleInputChangeWithBackgroundUpdate}
-                      className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                      className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
                       placeholder="e.g., 0.40mm"
                     />
                   </div>
@@ -1552,7 +1550,7 @@ const FormModal2 = ({
                       name="verificationCurvePointCheck"
                       value={formData.verificationCurvePointCheck}
                       onChange={handleInputChangeWithBackgroundUpdate}
-                      className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                      className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
                       placeholder="e.g., Successful"
                     />
                   </div>
@@ -1575,7 +1573,7 @@ const FormModal2 = ({
                     value={formData.nieaDescription}
                     onChange={handleInputChangeWithBackgroundUpdate}
                     rows="4"
-                    className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                    className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
                     placeholder="Enter description for NIEA viewpoint..."
                   />
                 </div>
@@ -1593,7 +1591,7 @@ const FormModal2 = ({
                     }
                     accept="image/*"
                     multiple
-                    className="block w-full text-sm text-gray-500 file:mr-4 file:rounded-lg file:border-0 file:bg-blue-50 file:px-4 file:py-2 file:text-sm file:font-medium file:text-blue-700 hover:file:bg-blue-100"
+                    className="block w-full text-sm text-gray-500 file:mr-4 file:rounded-lg file:border-0 file:bg-brand-50 file:px-4 file:py-2 file:text-sm file:font-medium file:text-brand-700 hover:file:bg-brand-100"
                   />
                   <div className="mt-1 text-xs text-gray-500">
                     Upload multiple NIEA viewpoint images (maximum 5 files).
@@ -1640,7 +1638,7 @@ const FormModal2 = ({
                                   )
                                 }
                                 placeholder="Add caption"
-                                className="mt-2 w-full rounded border border-gray-300 px-2 py-1 text-xs focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                className="mt-2 w-full rounded border border-gray-300 px-2 py-1 text-xs focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
                               />
                               <button
                                 type="button"
@@ -1694,7 +1692,7 @@ const FormModal2 = ({
                     value={formData.routineMaintenanceDescription}
                     onChange={handleInputChangeWithBackgroundUpdate}
                     rows="4"
-                    className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                    className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
                     placeholder="NIW operational personnel record maintenance activities..."
                   />
                 </div>
@@ -1715,7 +1713,7 @@ const FormModal2 = ({
                     }
                     accept="image/*"
                     multiple
-                    className="block w-full text-sm text-gray-500 file:mr-4 file:rounded-lg file:border-0 file:bg-blue-50 file:px-4 file:py-2 file:text-sm file:font-medium file:text-blue-700 hover:file:bg-blue-100"
+                    className="block w-full text-sm text-gray-500 file:mr-4 file:rounded-lg file:border-0 file:bg-brand-50 file:px-4 file:py-2 file:text-sm file:font-medium file:text-brand-700 hover:file:bg-brand-100"
                   />
                   <div className="mt-1 text-xs text-gray-500">
                     Upload multiple routine maintenance images (maximum 5
@@ -1771,7 +1769,7 @@ const FormModal2 = ({
                                       )
                                     }
                                     placeholder="Add caption"
-                                    className="mt-2 w-full rounded border border-gray-300 px-2 py-1 text-xs focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                    className="mt-2 w-full rounded border border-gray-300 px-2 py-1 text-xs focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
                                   />
                                   <button
                                     type="button"
@@ -1822,7 +1820,7 @@ const FormModal2 = ({
                     value={formData.routineVerificationDescription}
                     onChange={handleInputChangeWithBackgroundUpdate}
                     rows="4"
-                    className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                    className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
                     placeholder="The flow sensor has a fixed calibration bracket..."
                   />
                 </div>
@@ -1835,7 +1833,7 @@ const FormModal2 = ({
                     name="nextFlowValidationDate"
                     value={formData.nextFlowValidationDate}
                     onChange={handleInputChangeWithBackgroundUpdate}
-                    className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                    className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
                   />
                   <div className="mt-1 text-xs text-gray-500">
                     Date of Inspection + 1 year
@@ -1858,7 +1856,7 @@ const FormModal2 = ({
                     }
                     accept="image/*"
                     multiple
-                    className="block w-full text-sm text-gray-500 file:mr-4 file:rounded-lg file:border-0 file:bg-blue-50 file:px-4 file:py-2 file:text-sm file:font-medium file:text-blue-700 hover:file:bg-blue-100"
+                    className="block w-full text-sm text-gray-500 file:mr-4 file:rounded-lg file:border-0 file:bg-brand-50 file:px-4 file:py-2 file:text-sm file:font-medium file:text-brand-700 hover:file:bg-brand-100"
                   />
                   <div className="mt-1 text-xs text-gray-500">
                     Upload multiple routine verification images (maximum 5
@@ -1913,7 +1911,7 @@ const FormModal2 = ({
                                       )
                                     }
                                     placeholder="Add caption"
-                                    className="mt-2 w-full rounded border border-gray-300 px-2 py-1 text-xs focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                    className="mt-2 w-full rounded border border-gray-300 px-2 py-1 text-xs focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
                                   />
                                   <button
                                     type="button"
@@ -1960,7 +1958,7 @@ const FormModal2 = ({
                 The following is a list of equipment taken to each inspection.
               </p>
 
-              {/* Fixed Equipment Table — Site survey vehicle SIRIS 4 */}
+              {/* Fixed Equipment Table â€” Site survey vehicle SIRIS 4 */}
               <div className="overflow-x-auto rounded-lg border border-purple-300">
                 <table className="w-full text-sm">
                   <thead>
@@ -1977,19 +1975,19 @@ const FormModal2 = ({
                   </thead>
                   <tbody className="text-gray-700">
                     {[
-                      ["Engineers level", "335620", "±2.0mm"],
-                      ["1000mm Steel rule", "Shinwa (Purple)", "±0.5mm"],
-                      ["3m Talmeter tape", "Purple label", "±0.5mm"],
-                      ["5m Macallister tape", "Purple label", "±0.5mm"],
-                      ["ISOTech IDM (DVM)", "85003701", "±0.008% 1 digit"],
-                      ["Ridgid Micro LM-100 (Laser distance meter)", "SZQA0470080416", "±0.5mm"],
+                      ["Engineers level", "335620", "Â±2.0mm"],
+                      ["1000mm Steel rule", "Shinwa (Purple)", "Â±0.5mm"],
+                      ["3m Talmeter tape", "Purple label", "Â±0.5mm"],
+                      ["5m Macallister tape", "Purple label", "Â±0.5mm"],
+                      ["ISOTech IDM (DVM)", "85003701", "Â±0.008% 1 digit"],
+                      ["Ridgid Micro LM-100 (Laser distance meter)", "SZQA0470080416", "Â±0.5mm"],
                       ["Gas Detector", "", "n/a"],
-                      ["PT878", "GAA1518003", "±3.06%"],
-                      ["Nivus OCM Pro", "Van A (Purple Label)", "±5.5%"],
-                      ["Nivus Wedge", "Van A (Purple Label)", "±5.5%"],
-                      ["Calibration plate", "CRP 10.02", "±2mm (Reference only)"],
-                      ["Engineers Staff (Red/White)", "Purple label", "±1mm (Reference only)"],
-                      ["Steel Callipers", "Purple label", "±1mm (Reference only)"],
+                      ["PT878", "GAA1518003", "Â±3.06%"],
+                      ["Nivus OCM Pro", "Van A (Purple Label)", "Â±5.5%"],
+                      ["Nivus Wedge", "Van A (Purple Label)", "Â±5.5%"],
+                      ["Calibration plate", "CRP 10.02", "Â±2mm (Reference only)"],
+                      ["Engineers Staff (Red/White)", "Purple label", "Â±1mm (Reference only)"],
+                      ["Steel Callipers", "Purple label", "Â±1mm (Reference only)"],
                     ].map(([equipment, serial, uncertainty], i) => (
                       <tr key={i} className={i % 2 === 0 ? "bg-white" : "bg-gray-50"}>
                         <td className="border-r border-gray-200 px-3 py-1.5 text-center">{equipment}</td>
@@ -2013,7 +2011,7 @@ const FormModal2 = ({
                   }
                   accept="image/*"
                   multiple
-                  className="block w-full text-sm text-gray-500 file:mr-4 file:rounded-lg file:border-0 file:bg-blue-50 file:px-4 file:py-2 file:text-sm file:font-medium file:text-blue-700 hover:file:bg-blue-100"
+                  className="block w-full text-sm text-gray-500 file:mr-4 file:rounded-lg file:border-0 file:bg-brand-50 file:px-4 file:py-2 file:text-sm file:font-medium file:text-brand-700 hover:file:bg-brand-100"
                 />
                 <div className="mt-1 text-xs text-gray-500">
                   Upload multiple survey equipment images (maximum 5 files).
@@ -2080,7 +2078,7 @@ const FormModal2 = ({
                                   )
                                 }
                                 placeholder="Add caption"
-                                className="mt-2 w-full rounded border border-gray-300 px-2 py-1 text-xs focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                className="mt-2 w-full rounded border border-gray-300 px-2 py-1 text-xs focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
                               />
                               <button
                                 type="button"
@@ -2130,7 +2128,7 @@ const FormModal2 = ({
                   value={formData.appendixField1}
                   onChange={handleInputChangeWithBackgroundUpdate}
                   rows="3"
-                  className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
                   placeholder=""
                 />
               </div>
@@ -2146,7 +2144,7 @@ const FormModal2 = ({
                   }
                   accept="image/*,application/pdf"
                   multiple
-                  className="block w-full text-sm text-gray-500 file:mr-4 file:rounded-lg file:border-0 file:bg-blue-50 file:px-4 file:py-2 file:text-sm file:font-medium file:text-blue-700 hover:file:bg-blue-100"
+                  className="block w-full text-sm text-gray-500 file:mr-4 file:rounded-lg file:border-0 file:bg-brand-50 file:px-4 file:py-2 file:text-sm file:font-medium file:text-brand-700 hover:file:bg-brand-100"
                 />
                 <div className="mt-1 text-xs text-gray-500">
                   Upload multiple files (maximum 5 files). Accepted formats:
@@ -2228,7 +2226,7 @@ const FormModal2 = ({
                                   )
                                 }
                                 placeholder="Add caption"
-                                className="mt-2 w-full rounded border border-gray-300 px-2 py-1 text-xs focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                className="mt-2 w-full rounded border border-gray-300 px-2 py-1 text-xs focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
                               />
                               <button
                                 type="button"
@@ -2274,7 +2272,7 @@ const FormModal2 = ({
                   value={formData.appendixField2}
                   onChange={handleInputChangeWithBackgroundUpdate}
                   rows="3"
-                  className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
                   placeholder=""
                 />
               </div>
@@ -2290,7 +2288,7 @@ const FormModal2 = ({
                   }
                   accept="image/*,application/pdf"
                   multiple
-                  className="block w-full text-sm text-gray-500 file:mr-4 file:rounded-lg file:border-0 file:bg-blue-50 file:px-4 file:py-2 file:text-sm file:font-medium file:text-blue-700 hover:file:bg-blue-100"
+                  className="block w-full text-sm text-gray-500 file:mr-4 file:rounded-lg file:border-0 file:bg-brand-50 file:px-4 file:py-2 file:text-sm file:font-medium file:text-brand-700 hover:file:bg-brand-100"
                 />
                 <div className="mt-1 text-xs text-gray-500">
                   Upload multiple files (maximum 5 files). Accepted formats:
@@ -2372,7 +2370,7 @@ const FormModal2 = ({
                                   )
                                 }
                                 placeholder="Add caption"
-                                className="mt-2 w-full rounded border border-gray-300 px-2 py-1 text-xs focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                className="mt-2 w-full rounded border border-gray-300 px-2 py-1 text-xs focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
                               />
                               <button
                                 type="button"
@@ -2418,7 +2416,7 @@ const FormModal2 = ({
                   value={formData.appendixField3}
                   onChange={handleInputChangeWithBackgroundUpdate}
                   rows="3"
-                  className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
                   placeholder=""
                 />
               </div>
@@ -2434,7 +2432,7 @@ const FormModal2 = ({
                   }
                   accept="image/*,application/pdf"
                   multiple
-                  className="block w-full text-sm text-gray-500 file:mr-4 file:rounded-lg file:border-0 file:bg-blue-50 file:px-4 file:py-2 file:text-sm file:font-medium file:text-blue-700 hover:file:bg-blue-100"
+                  className="block w-full text-sm text-gray-500 file:mr-4 file:rounded-lg file:border-0 file:bg-brand-50 file:px-4 file:py-2 file:text-sm file:font-medium file:text-brand-700 hover:file:bg-brand-100"
                 />
                 <div className="mt-1 text-xs text-gray-500">
                   Upload multiple files (maximum 5 files). Accepted formats:
@@ -2516,7 +2514,7 @@ const FormModal2 = ({
                                   )
                                 }
                                 placeholder="Add caption"
-                                className="mt-2 w-full rounded border border-gray-300 px-2 py-1 text-xs focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                className="mt-2 w-full rounded border border-gray-300 px-2 py-1 text-xs focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
                               />
                               <button
                                 type="button"
@@ -2564,7 +2562,7 @@ const FormModal2 = ({
                   name="conclusionUncertaintySheetF2"
                   value={formData.conclusionUncertaintySheetF2}
                   onChange={handleInputChangeWithBackgroundUpdate}
-                  className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
                 />
               </div>
               <div>
@@ -2576,8 +2574,8 @@ const FormModal2 = ({
                   name="conclusionUncertaintySheetF104"
                   value={formData.conclusionUncertaintySheetF104}
                   onChange={handleInputChangeWithBackgroundUpdate}
-                  className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-                  placeholder="e.g., ±3.03%"
+                  className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
+                  placeholder="e.g., Â±3.03%"
                 />
               </div>
             </div>
@@ -2594,7 +2592,7 @@ const FormModal2 = ({
               <div className="flex items-center gap-3">
                 <div
                   className={`h-7 w-12 cursor-pointer rounded-full transition-colors duration-200 ${
-                    signatureIncluded ? "bg-blue-500" : "bg-gray-300"
+                    signatureIncluded ? "bg-brand-500" : "bg-gray-300"
                   }`}
                   onClick={() => setSignatureIncluded(!signatureIncluded)}
                 >
@@ -2618,7 +2616,7 @@ const FormModal2 = ({
                     name="signatureName"
                     value={formData.signatureName}
                     onChange={handleInputChangeWithBackgroundUpdate}
-                    className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                    className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
                   />
                 </div>
                 <div>
@@ -2630,7 +2628,7 @@ const FormModal2 = ({
                     name="signatureCompany"
                     value={formData.signatureCompany}
                     onChange={handleInputChangeWithBackgroundUpdate}
-                    className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                    className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
                   />
                 </div>
               </div>
@@ -2651,7 +2649,7 @@ const FormModal2 = ({
             <Button
               type="submit"
               disabled={isCreatingForm || isGenerating}
-              className="rounded-lg bg-blue-500 px-4 py-2 font-medium text-white hover:bg-blue-600 disabled:cursor-not-allowed disabled:opacity-50"
+              className="rounded-lg bg-brand-500 px-4 py-2 font-medium text-white hover:bg-brand-600 disabled:cursor-not-allowed disabled:opacity-50"
             >
               {isCreatingForm ? (
                 <div className="flex items-center space-x-2">

@@ -129,7 +129,7 @@ const Calculator = () => {
             </Button>
             <Button
               onClick={() => inputOperator("÷")}
-              className="bg-blue-500 text-white hover:bg-blue-600"
+              className="bg-brand-500 text-white hover:bg-brand-600"
             >
               ÷
             </Button>
@@ -155,7 +155,7 @@ const Calculator = () => {
             </Button>
             <Button
               onClick={() => inputOperator("×")}
-              className="bg-blue-500 text-white hover:bg-blue-600"
+              className="bg-brand-500 text-white hover:bg-brand-600"
             >
               ×
             </Button>
@@ -181,7 +181,7 @@ const Calculator = () => {
             </Button>
             <Button
               onClick={() => inputOperator("-")}
-              className="bg-blue-500 text-white hover:bg-blue-600"
+              className="bg-brand-500 text-white hover:bg-brand-600"
             >
               -
             </Button>
@@ -207,7 +207,7 @@ const Calculator = () => {
             </Button>
             <Button
               onClick={() => inputOperator("+")}
-              className="bg-blue-500 text-white hover:bg-blue-600"
+              className="bg-brand-500 text-white hover:bg-brand-600"
             >
               +
             </Button>

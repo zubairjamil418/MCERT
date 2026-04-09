@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+﻿import React, { useEffect, useRef, useState } from "react";
 import ImageEditor from "tui-image-editor";
 import "tui-image-editor/dist/tui-image-editor.css";
 import "tui-color-picker/dist/tui-color-picker.css";
@@ -221,7 +221,7 @@ const ImageEditorModal = ({ isOpen, imageFile, onSave, onCancel }) => {
             type="button"
             onClick={handleSave}
             disabled={isSaving}
-            className="rounded-lg bg-blue-500 px-6 py-2 font-medium text-white hover:bg-blue-600 disabled:cursor-not-allowed disabled:opacity-50"
+            className="rounded-lg bg-brand-500 px-6 py-2 font-medium text-white hover:bg-brand-600 disabled:cursor-not-allowed disabled:opacity-50"
           >
             {isSaving ? (
               <div className="flex items-center space-x-2">

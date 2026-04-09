@@ -1,4 +1,4 @@
-const Radio = (props) => {
+﻿const Radio = (props) => {
   const { color, id, name, ...rest } = props;
   return (
     <input
@@ -12,7 +12,7 @@ const Radio = (props) => {
          color === "red"
            ? "checked:!border-red-500 checked:before:!bg-red-500 dark:checked:!border-red-400 dark:checked:before:!bg-red-400"
            : color === "blue"
-           ? "checked:!border-blue-500 checked:before:!bg-blue-500 dark:checked:!border-blue-400 dark:checked:before:!bg-blue-400"
+           ? "checked:!border-brand-500 checked:before:!bg-brand-500 dark:checked:!border-brand-400 dark:checked:before:!bg-brand-400"
            : color === "green"
            ? "checked:!border-green-500 checked:before:!bg-green-500 dark:checked:!border-green-400 dark:checked:before:!bg-green-400"
            : color === "yellow"

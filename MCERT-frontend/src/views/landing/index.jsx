@@ -1,4 +1,4 @@
-import React from "react";
+﻿import React from "react";
 import Header from "components/header/Header";
 import backgroundImg from "assets/img/layout/background.png";
 
@@ -24,7 +24,7 @@ const Landing = () => {
         {/* Main Card */}
         <div className="mb-8 flex w-full justify-center">
           <div className="mx-4 mt-8 w-full max-w-4xl rounded-lg bg-white p-10 shadow-lg">
-            <h3 className="mb-2 text-lg font-bold text-blue-800">
+            <h3 className="mb-2 text-lg font-bold text-brand-700">
               WE ARE SIRIS
             </h3>
             <h1 className="mb-4 text-4xl font-bold leading-tight">
@@ -34,11 +34,11 @@ const Landing = () => {
             <p className="mb-2 text-gray-700">
               At SIRIS we are a recognised provider of water discharge
               monitoring solutions, including effluent{" "}
-              <span className="font-bold text-blue-800">
+              <span className="font-bold text-brand-700">
                 flow sampling, effluent flow measurement
               </span>{" "}
               and{" "}
-              <span className="font-bold text-blue-800">
+              <span className="font-bold text-brand-700">
                 MCERTS inspections.
               </span>
             </p>
@@ -63,7 +63,7 @@ const Landing = () => {
           <div className="mx-4 flex w-full max-w-7xl flex-col items-stretch gap-8 rounded-lg bg-white p-10 shadow-lg lg:flex-row">
             {/* Left: Text */}
             <div className="flex flex-1 flex-col justify-center">
-              <h3 className="mb-2 text-lg font-bold text-blue-800">
+              <h3 className="mb-2 text-lg font-bold text-brand-700">
                 WHAT WE DO
               </h3>
               <h1 className="mb-2 text-3xl font-bold leading-tight">
@@ -86,7 +86,7 @@ const Landing = () => {
             <div className="grid flex-1 grid-cols-2 items-center gap-x-6 gap-y-8 self-center">
               <div className="flex items-center space-x-3">
                 <svg
-                  className="h-10 w-10 text-blue-800"
+                  className="h-10 w-10 text-brand-700"
                   fill="none"
                   stroke="currentColor"
                   strokeWidth="2"
@@ -99,7 +99,7 @@ const Landing = () => {
               </div>
               <div className="flex items-center space-x-3">
                 <svg
-                  className="h-10 w-10 text-blue-800"
+                  className="h-10 w-10 text-brand-700"
                   fill="none"
                   stroke="currentColor"
                   strokeWidth="2"
@@ -112,7 +112,7 @@ const Landing = () => {
               </div>
               <div className="flex items-center space-x-3">
                 <svg
-                  className="h-10 w-10 text-blue-800"
+                  className="h-10 w-10 text-brand-700"
                   fill="none"
                   stroke="currentColor"
                   strokeWidth="2"
@@ -125,7 +125,7 @@ const Landing = () => {
               </div>
               <div className="flex items-center space-x-3">
                 <svg
-                  className="h-10 w-10 text-blue-800"
+                  className="h-10 w-10 text-brand-700"
                   fill="none"
                   stroke="currentColor"
                   strokeWidth="2"
@@ -138,7 +138,7 @@ const Landing = () => {
               </div>
               <div className="flex items-center space-x-3">
                 <svg
-                  className="h-10 w-10 text-blue-800"
+                  className="h-10 w-10 text-brand-700"
                   fill="none"
                   stroke="currentColor"
                   strokeWidth="2"

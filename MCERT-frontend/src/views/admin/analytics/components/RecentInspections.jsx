@@ -1,4 +1,4 @@
-import Card from "components/card";
+﻿import Card from "components/card";
 import { MdHistory } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
 
@@ -24,8 +24,8 @@ const RecentInspections = ({ inspections = [], isLoading, pagination, onPageChan
   };
 
   const statusStyles = {
-    submitted: "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400",
-    pending: "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400",
+    completed: "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400",
+    Draft: "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400",
   };
 
   const handleRowClick = (item) => {
@@ -33,7 +33,7 @@ const RecentInspections = ({ inspections = [], isLoading, pagination, onPageChan
   };
 
   const formatDate = (dateStr) => {
-    if (!dateStr) return "—";
+    if (!dateStr) return "-";
     const d = new Date(dateStr);
     if (isNaN(d.getTime())) return dateStr;
     return d.toLocaleDateString("en-GB", {
@@ -101,8 +101,8 @@ const RecentInspections = ({ inspections = [], isLoading, pagination, onPageChan
                 >
                   <td className="px-4 py-3">
                     <div className="flex items-center">
-                      <div className="mr-3 flex h-8 w-8 items-center justify-center rounded-lg bg-blue-100 dark:bg-blue-900">
-                        <span className="text-xs font-semibold text-blue-600 dark:text-blue-400">
+                      <div className="mr-3 flex h-8 w-8 items-center justify-center rounded-lg bg-brand-100 dark:bg-brand-900">
+                        <span className="text-xs font-semibold text-brand-600 dark:text-brand-400">
                           {item.siteName?.charAt(0) || "?"}
                         </span>
                       </div>
@@ -122,7 +122,7 @@ const RecentInspections = ({ inspections = [], isLoading, pagination, onPageChan
                   </td>
                   <td className="px-4 py-3">
                     <p className="text-sm text-gray-700 dark:text-gray-300">
-                      {item.inspector || "—"}
+                      {item.inspector || "-"}
                     </p>
                   </td>
                   <td className="px-4 py-3">
@@ -155,7 +155,7 @@ const RecentInspections = ({ inspections = [], isLoading, pagination, onPageChan
       {pagination && pagination.totalPages > 1 && (
         <div className="mt-4 flex items-center justify-between border-t border-gray-200 pt-4 dark:border-gray-700">
           <p className="text-sm text-gray-600 dark:text-gray-400">
-            Showing {((pagination.page - 1) * pagination.limit) + 1}–{Math.min(pagination.page * pagination.limit, pagination.total)} of {pagination.total}
+            Showing {((pagination.page - 1) * pagination.limit) + 1}-{Math.min(pagination.page * pagination.limit, pagination.total)} of {pagination.total}
           </p>
           <div className="flex items-center gap-2">
             <button
@@ -177,7 +177,7 @@ const RecentInspections = ({ inspections = [], isLoading, pagination, onPageChan
               }, [])
               .map((item, idx) =>
                 item === "..." ? (
-                  <span key={`ellipsis-${idx}`} className="px-1 text-gray-400">…</span>
+                  <span key={`ellipsis-${idx}`} className="px-1 text-gray-400">...</span>
                 ) : (
                   <button
                     key={item}

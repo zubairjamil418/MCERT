@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+﻿import React, { useState, useEffect, useCallback } from "react";
 import { generateMCLERTSReport } from "../../../utils/documentGenerator3";
 import {
   formsService,
@@ -784,7 +784,7 @@ const Form2Page = () => {
         <button
           type="button"
           onClick={() => setIsOpen(!isOpen)}
-          className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-left focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+          className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-left focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
         >
           {value || placeholder}
           <svg
@@ -820,7 +820,7 @@ const Form2Page = () => {
                         onChange(option);
                         setIsOpen(false);
                       }}
-                      className="flex-1 text-left text-gray-700 hover:text-blue-600"
+                      className="flex-1 text-left text-gray-700 hover:text-brand-600"
                     >
                       {option}
                     </button>
@@ -860,7 +860,7 @@ const Form2Page = () => {
                 <button
                   type="button"
                   onClick={onAdd}
-                  className="flex w-full items-center justify-center rounded-md bg-blue-50 px-3 py-2 text-sm text-blue-600 hover:bg-blue-100"
+                  className="flex w-full items-center justify-center rounded-md bg-brand-50 px-3 py-2 text-sm text-brand-600 hover:bg-brand-100"
                   title={addButtonTitle}
                 >
                   <svg
@@ -1296,21 +1296,18 @@ const Form2Page = () => {
   };
 
   return (
-    <div className="mb-8 mt-12 flex flex-col gap-12">
+    <div className="mt-3 flex flex-col gap-5">
       {/* Header Section */}
       <div className="flex flex-col gap-4">
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-2xl font-bold text-gray-800 dark:text-white">
-              Flumes
-            </h2>
             <p className="text-gray-600 dark:text-gray-300">
               Create and manage Flume forms
             </p>
           </div>
           <Button
             onClick={handleAddNewForm}
-            className="rounded-lg bg-blue-500 px-6 py-3 font-medium text-white transition-colors duration-200 hover:bg-blue-600"
+            className="rounded-lg bg-brand-500 px-6 py-3 font-medium text-white transition-colors duration-200 hover:bg-brand-600"
           >
             + Add New Form
           </Button>
@@ -1326,7 +1323,7 @@ const Form2Page = () => {
             </svg>
             <span>{successMessage}</span>
           </div>
-          <button onClick={() => setSuccessMessage('')} className="ml-4 text-green-600 hover:text-green-800 dark:hover:text-green-200">✕</button>
+          <button onClick={() => setSuccessMessage('')} className="ml-4 text-green-600 hover:text-green-800 dark:hover:text-green-200">âœ•</button>
         </div>
       )}
 

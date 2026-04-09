@@ -16,18 +16,22 @@ export class DashboardService {
   ) {}
 
   async getStats(userId?: string, formType?: string, startDate?: string, endDate?: string) {
-    const userFilter: any = userId ? { userId: new Types.ObjectId(userId) } : {};
+    const baseUserFilter: any = userId ? { userId: new Types.ObjectId(userId) } : {};
+    const dateFilter: any = {};
 
-    // Apply date filter to base filter
+    // Build date filter separately so it can be applied selectively
     if (startDate || endDate) {
-      userFilter.createdAt = {};
-      if (startDate) userFilter.createdAt.$gte = new Date(startDate);
+      dateFilter.createdAt = {};
+      if (startDate) dateFilter.createdAt.$gte = new Date(startDate);
       if (endDate) {
         const end = new Date(endDate);
         end.setHours(23, 59, 59, 999);
-        userFilter.createdAt.$lte = end;
+        dateFilter.createdAt.$lte = end;
       }
     }
+
+    // Combined filter for stats, recent inspections (date range applied)
+    const userFilter: any = { ...baseUserFilter, ...dateFilter };
 
     // Determine which form types to include
     const includeForm1 = !formType || formType === 'all' || formType === 'form1';
@@ -40,21 +44,31 @@ export class DashboardService {
     if (includeForm3) statsPromises.push(this.getFormTypeStats(this.thirdFormModel, userFilter));
 
     const statsResults = await Promise.all(statsPromises);
-    const form1Stats = includeForm1 ? statsResults.shift() : { total: 0, pending: 0, submitted: 0, thisMonth: 0 };
-    const form2Stats = includeForm2 ? statsResults.shift() : { total: 0, pending: 0, submitted: 0, thisMonth: 0 };
-    const form3Stats = includeForm3 ? statsResults.shift() : { total: 0, pending: 0, submitted: 0, thisMonth: 0 };
+    const form1Stats = includeForm1 ? statsResults.shift() : { total: 0, draft: 0, completed: 0, thisMonth: 0 };
+    const form2Stats = includeForm2 ? statsResults.shift() : { total: 0, draft: 0, completed: 0, thisMonth: 0 };
+    const form3Stats = includeForm3 ? statsResults.shift() : { total: 0, draft: 0, completed: 0, thisMonth: 0 };
 
-    // Monthly trend — last 6 months (use base user filter without date range for trend)
-    const trendFilter: any = userId ? { userId: new Types.ObjectId(userId) } : {};
-    const sixMonthsAgo = new Date();
-    sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
-    sixMonthsAgo.setDate(1);
-    sixMonthsAgo.setHours(0, 0, 0, 0);
+    // Monthly trend — respects date range if set, otherwise last 6 months
+    const trendFilter: any = { ...baseUserFilter };
+    let trendSince: Date;
+    if (startDate) {
+      trendSince = new Date(startDate);
+    } else {
+      trendSince = new Date();
+      trendSince.setMonth(trendSince.getMonth() - 6);
+      trendSince.setDate(1);
+      trendSince.setHours(0, 0, 0, 0);
+    }
+    if (endDate) {
+      const end = new Date(endDate);
+      end.setHours(23, 59, 59, 999);
+      trendFilter.createdAt = { $gte: trendSince, $lte: end };
+    }
 
     const trendPromises = [];
-    if (includeForm1) trendPromises.push(this.getMonthlyTrend(this.formModel, trendFilter, sixMonthsAgo));
-    if (includeForm2) trendPromises.push(this.getMonthlyTrend(this.secondFormModel, trendFilter, sixMonthsAgo));
-    if (includeForm3) trendPromises.push(this.getMonthlyTrend(this.thirdFormModel, trendFilter, sixMonthsAgo));
+    if (includeForm1) trendPromises.push(this.getMonthlyTrend(this.formModel, trendFilter, trendSince));
+    if (includeForm2) trendPromises.push(this.getMonthlyTrend(this.secondFormModel, trendFilter, trendSince));
+    if (includeForm3) trendPromises.push(this.getMonthlyTrend(this.thirdFormModel, trendFilter, trendSince));
 
     const trendResults = await Promise.all(trendPromises);
     const monthlyForm1 = includeForm1 ? trendResults.shift() : [];
@@ -67,16 +81,17 @@ export class DashboardService {
       monthlyForm3,
     );
 
-    // Upcoming validations from Form 2 & 3 (they have nextFlowValidationDate)
+    // Upcoming validations — use base user filter without date range
+    // (validations are about future due dates, not creation dates)
     const validationPromises = [];
-    if (includeForm2) validationPromises.push(this.getUpcomingValidations(this.secondFormModel, userFilter, 'Form 2'));
-    if (includeForm3) validationPromises.push(this.getUpcomingValidations(this.thirdFormModel, userFilter, 'Form 3'));
+    if (includeForm2) validationPromises.push(this.getUpcomingValidations(this.secondFormModel, baseUserFilter, 'Form 2'));
+    if (includeForm3) validationPromises.push(this.getUpcomingValidations(this.thirdFormModel, baseUserFilter, 'Form 3'));
     const validationResults = await Promise.all(validationPromises);
     const upcomingValidations = validationResults.flat().sort(
       (a, b) => new Date(a.validationDue).getTime() - new Date(b.validationDue).getTime(),
-    );
+    ).slice(0, 6);
 
-    // Recent inspections — last 10 across selected types
+    // Recent inspections — last 10 across selected types (date range applied)
     const recentPromises = [];
     if (includeForm1) recentPromises.push(this.getRecentInspections(this.formModel, userFilter, 'Form 1'));
     if (includeForm2) recentPromises.push(this.getRecentInspections(this.secondFormModel, userFilter, 'Form 2'));
@@ -89,16 +104,13 @@ export class DashboardService {
       )
       .slice(0, 10);
 
-    const now = new Date();
-    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-
     return {
       totalForms:
         form1Stats.total + form2Stats.total + form3Stats.total,
-      pending:
-        form1Stats.pending + form2Stats.pending + form3Stats.pending,
-      submitted:
-        form1Stats.submitted + form2Stats.submitted + form3Stats.submitted,
+      draft:
+        form1Stats.draft + form2Stats.draft + form3Stats.draft,
+      completed:
+        form1Stats.completed + form2Stats.completed + form3Stats.completed,
       thisMonth:
         form1Stats.thisMonth + form2Stats.thisMonth + form3Stats.thisMonth,
       byFormType: {
@@ -116,26 +128,48 @@ export class DashboardService {
     const now = new Date();
     const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
 
-    const [total, pending, submitted, thisMonth] = await Promise.all([
-      model.countDocuments(userFilter),
-      model.countDocuments({ ...userFilter, status: 'pending' }),
-      model.countDocuments({ ...userFilter, status: 'submitted' }),
-      model.countDocuments({
-        ...userFilter,
+    // Build thisMonth filter: must be >= startOfMonth AND respect any existing date range
+    // If userFilter already has createdAt with $gte/$lte, we need to intersect
+    const thisMonthFilter: any = {};
+    if (userFilter.createdAt) {
+      // Use $and to combine existing date range with startOfMonth constraint
+      const existingDateFilter = { createdAt: userFilter.createdAt };
+      const { createdAt, ...restFilter } = userFilter;
+      Object.assign(thisMonthFilter, restFilter, {
+        $and: [
+          existingDateFilter,
+          { createdAt: { $gte: startOfMonth } },
+        ],
+      });
+    } else {
+      Object.assign(thisMonthFilter, userFilter, {
         createdAt: { $gte: startOfMonth },
-      }),
+      });
+    }
+
+    const [total, draft, completed, thisMonth] = await Promise.all([
+      model.countDocuments(userFilter),
+      model.countDocuments({ ...userFilter, status: 'Draft' }),
+      model.countDocuments({ ...userFilter, status: 'completed' }),
+      model.countDocuments(thisMonthFilter),
     ]);
 
-    return { total, pending, submitted, thisMonth };
+    return { total, draft, completed, thisMonth };
   }
 
   private async getMonthlyTrend(
     model: Model<any>,
-    userFilter: any,
+    trendFilter: any,
     since: Date,
   ) {
+    // trendFilter already contains the full date range (or just userId)
+    // If no createdAt in trendFilter, default to $gte: since
+    const matchFilter = trendFilter.createdAt
+      ? { ...trendFilter }
+      : { ...trendFilter, createdAt: { $gte: since } };
+
     return model.aggregate([
-      { $match: { ...userFilter, createdAt: { $gte: since } } },
+      { $match: matchFilter },
       {
         $group: {
           _id: {

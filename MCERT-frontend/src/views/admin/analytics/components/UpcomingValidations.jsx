@@ -1,4 +1,4 @@
-import Card from "components/card";
+﻿import Card from "components/card";
 import { MdWarning } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
 
@@ -34,7 +34,7 @@ const UpcomingValidations = ({ validations = [], isLoading }) => {
   };
 
   const formatDate = (dateStr) => {
-    if (!dateStr) return "—";
+    if (!dateStr) return "-";
     const d = new Date(dateStr);
     if (isNaN(d.getTime())) return dateStr;
     return d.toLocaleDateString("en-GB", {
@@ -103,7 +103,7 @@ const UpcomingValidations = ({ validations = [], isLoading }) => {
                       </p>
                     </td>
                     <td className="px-3 py-3">
-                      <span className="rounded-full bg-blue-100 px-2 py-1 text-xs font-medium text-blue-700 dark:bg-blue-900/30 dark:text-blue-400">
+                      <span className="rounded-full bg-brand-100 px-2 py-1 text-xs font-medium text-brand-700 dark:bg-brand-900/30 dark:text-brand-400">
                         {({"Form 1": "Electromagnetic Flow Meters", "Form 2": "V-Notch Weirs", "Form 3": "Flumes"})[item.formType] || item.formType}
                       </span>
                     </td>

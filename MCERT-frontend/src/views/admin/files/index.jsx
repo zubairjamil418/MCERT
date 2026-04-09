@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+﻿import React, { useState, useRef } from "react";
 import {
   MdFileUpload,
   MdFolder,
@@ -207,7 +207,7 @@ const Files = () => {
                       {file.name}
                     </h4>
                     <p className="text-sm text-gray-500 dark:text-gray-400">
-                      {file.size} • Uploaded on {file.uploadDate}
+                      {file.size} â€¢ Uploaded on {file.uploadDate}
                     </p>
                   </div>
                 </div>
@@ -215,7 +215,7 @@ const Files = () => {
                 <div className="flex items-center space-x-2">
                   <button
                     onClick={() => viewFile(file.name)}
-                    className="rounded-lg p-2 text-blue-500 transition-colors hover:bg-blue-100 dark:hover:bg-blue-900/30"
+                    className="rounded-lg p-2 text-brand-500 transition-colors hover:bg-brand-100 dark:hover:bg-brand-900/30"
                     title="View file"
                   >
                     <MdVisibility className="h-5 w-5" />

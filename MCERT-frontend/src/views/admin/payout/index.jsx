@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+﻿import React, { useState } from "react";
 import {
   MdAttachMoney,
   MdAccountBalance,
@@ -70,7 +70,7 @@ const Payout = () => {
       case "pending":
         return "bg-yellow-100 text-yellow-800";
       case "processing":
-        return "bg-blue-100 text-blue-800";
+        return "bg-brand-100 text-brand-800";
       case "failed":
         return "bg-red-100 text-red-800";
       default:
@@ -131,8 +131,8 @@ const Payout = () => {
                 {payouts.length}
               </p>
             </div>
-            <div className="rounded-full bg-blue-100 p-3">
-              <MdAccountBalance className="h-6 w-6 text-blue-600" />
+            <div className="rounded-full bg-brand-100 p-3">
+              <MdAccountBalance className="h-6 w-6 text-brand-600" />
             </div>
           </div>
         </Card>

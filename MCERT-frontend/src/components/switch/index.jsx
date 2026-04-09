@@ -1,4 +1,4 @@
-const Switch = (props) => {
+﻿const Switch = (props) => {
   const { extra, color, ...rest } = props;
   return (
     <input
@@ -11,7 +11,7 @@ const Switch = (props) => {
         color === "red"
           ? "checked:bg-red-500 dark:checked:bg-red-400"
           : color === "blue"
-          ? "checked:bg-blue-500 dark:checked:bg-blue-400"
+          ? "checked:bg-brand-500 dark:checked:bg-brand-400"
           : color === "green"
           ? "checked:bg-green-500 dark:checked:bg-green-400"
           : color === "yellow"

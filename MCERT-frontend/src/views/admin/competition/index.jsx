@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+﻿import React, { useState } from "react";
 import {
   MdTrophy,
   MdPerson,
@@ -62,7 +62,7 @@ const Competition = () => {
       case "active":
         return "bg-green-100 text-green-800";
       case "completed":
-        return "bg-blue-100 text-blue-800";
+        return "bg-brand-100 text-brand-800";
       case "upcoming":
         return "bg-yellow-100 text-yellow-800";
       default:
@@ -84,9 +84,9 @@ const Competition = () => {
   };
 
   const getRankIcon = (rank) => {
-    if (rank === 1) return "🥇";
-    if (rank === 2) return "🥈";
-    if (rank === 3) return "🥉";
+    if (rank === 1) return "ðŸ¥‡";
+    if (rank === 2) return "ðŸ¥ˆ";
+    if (rank === 3) return "ðŸ¥‰";
     return rank;
   };
 
@@ -120,8 +120,8 @@ const Competition = () => {
                 {competitions.reduce((sum, c) => sum + c.participants, 0)}
               </p>
             </div>
-            <div className="rounded-full bg-blue-100 p-3">
-              <MdPerson className="h-6 w-6 text-blue-600" />
+            <div className="rounded-full bg-brand-100 p-3">
+              <MdPerson className="h-6 w-6 text-brand-600" />
             </div>
           </div>
         </Card>
@@ -212,7 +212,7 @@ const Competition = () => {
                       </p>
                     </div>
                     <div className="ml-4 flex space-x-2">
-                      <button className="rounded-lg p-2 text-blue-500 transition-colors hover:bg-blue-100 dark:hover:bg-blue-900/30">
+                      <button className="rounded-lg p-2 text-brand-500 transition-colors hover:bg-brand-100 dark:hover:bg-brand-900/30">
                         <MdEdit className="h-4 w-4" />
                       </button>
                       <button className="rounded-lg p-2 text-red-500 transition-colors hover:bg-red-100 dark:hover:bg-red-900/30">

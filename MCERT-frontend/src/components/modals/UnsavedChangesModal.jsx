@@ -1,4 +1,4 @@
-import React from "react";
+﻿import React from "react";
 
 // Simple Button component
 const Button = ({
@@ -41,7 +41,7 @@ const UnsavedChangesModal = ({
             className="ml-4 flex h-8 w-8 items-center justify-center rounded-full bg-gray-100 text-gray-500 hover:bg-gray-200 hover:text-gray-700"
             title="Close"
           >
-            ✕
+            âœ•
           </Button>
         </div>
         <div className="flex justify-end gap-3">
@@ -54,7 +54,7 @@ const UnsavedChangesModal = ({
           <Button
             onClick={onSave}
             disabled={isSaving}
-            className="rounded-lg bg-blue-500 px-4 py-2 text-white hover:bg-blue-600 disabled:cursor-not-allowed disabled:opacity-50"
+            className="rounded-lg bg-brand-500 px-4 py-2 text-white hover:bg-brand-600 disabled:cursor-not-allowed disabled:opacity-50"
           >
             {isSaving ? "Saving..." : "Save"}
           </Button>

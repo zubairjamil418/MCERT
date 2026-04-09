@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+﻿import React, { useState } from "react";
 import Calendar from "react-calendar";
 import { MdAdd, MdEvent, MdDelete, MdEdit } from "react-icons/md";
 import Card from "components/card";
@@ -75,7 +75,7 @@ const CalendarView = () => {
   const getEventTypeColor = (type) => {
     switch (type) {
       case "meeting":
-        return "bg-blue-100 text-blue-800 border-blue-200";
+        return "bg-brand-100 text-brand-800 border-brand-200";
       case "deadline":
         return "bg-red-100 text-red-800 border-red-200";
       case "presentation":
@@ -189,7 +189,7 @@ const CalendarView = () => {
                   <div
                     className={`h-3 w-3 rounded-full ${
                       event.type === "meeting"
-                        ? "bg-blue-500"
+                        ? "bg-brand-500"
                         : event.type === "deadline"
                         ? "bg-red-500"
                         : "bg-green-500"
@@ -311,7 +311,7 @@ const CalendarView = () => {
           background-color: #f3f4f6 !important;
         }
         .react-calendar__tile--active {
-          background-color: #3b82f6 !important;
+          background-color: #2196f3 !important;
           color: white !important;
         }
         .react-calendar__tile--now {

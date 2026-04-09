@@ -1,4 +1,4 @@
-import React from "react";
+﻿import React from "react";
 
 // Simple Button component
 const Button = ({
@@ -69,7 +69,7 @@ const FormModal3 = ({
       <div className="max-h-[90vh] w-full max-w-6xl overflow-y-auto rounded-lg bg-white p-6">
         <div className="mb-6 flex items-center justify-between">
           <h2 className="text-2xl font-bold text-gray-800 dark:text-white">
-            Flumes — {editingFormId ? "Edit" : "New Entry"}
+            Flumes - {editingFormId ? "Edit" : "New Entry"}
           </h2>
           <div className="flex gap-2">
             <label className="cursor-pointer rounded-lg border border-gray-300 bg-white px-4 py-2 text-gray-700 hover:bg-gray-50">
@@ -79,14 +79,12 @@ const FormModal3 = ({
                 onChange={handleExcelUpload}
                 className="hidden"
               />
-              📄 Upload Excel File
+              Upload Excel File
             </label>
             <Button
               onClick={closeModal}
               className="rounded-md bg-gray-200 px-3 py-2 text-gray-700 hover:bg-gray-300"
-            >
-              ✕
-            </Button>
+            >X</Button>
           </div>
         </div>
 
@@ -95,7 +93,7 @@ const FormModal3 = ({
           <div
             className={`mb-4 rounded-lg p-4 ${
               compressionStatus === "compressing"
-                ? "border border-blue-200 bg-blue-50"
+                ? "border border-brand-200 bg-brand-50"
                 : compressionStatus === "completed"
                 ? "border border-green-200 bg-green-50"
                 : compressionStatus === "error"
@@ -106,7 +104,7 @@ const FormModal3 = ({
             <div className="flex items-center space-x-2">
               {compressionStatus === "compressing" && (
                 <svg
-                  className="h-4 w-4 animate-spin text-blue-500"
+                  className="h-4 w-4 animate-spin text-brand-500"
                   xmlns="http://www.w3.org/2000/svg"
                   fill="none"
                   viewBox="0 0 24 24"
@@ -159,7 +157,7 @@ const FormModal3 = ({
               <span
                 className={`text-sm font-medium ${
                   compressionStatus === "compressing"
-                    ? "text-blue-700"
+                    ? "text-brand-700"
                     : compressionStatus === "completed"
                     ? "text-green-700"
                     : compressionStatus === "error"
@@ -188,7 +186,7 @@ const FormModal3 = ({
                       {(compressionProgress.originalSize / 1024 / 1024).toFixed(
                         1
                       )}
-                      MB →{" "}
+                      MB â†’{" "}
                       {(
                         compressionProgress.compressedSize /
                         1024 /
@@ -255,7 +253,7 @@ const FormModal3 = ({
                   <button
                     type="button"
                     onClick={() => openModal("inspector")}
-                    className="flex h-10 w-10 items-center justify-center rounded-lg border border-gray-300 bg-white text-gray-600 hover:bg-gray-50 hover:text-blue-600"
+                    className="flex h-10 w-10 items-center justify-center rounded-lg border border-gray-300 bg-white text-gray-600 hover:bg-gray-50 hover:text-brand-600"
                     title="Add new inspector"
                   >
                     <svg
@@ -280,7 +278,7 @@ const FormModal3 = ({
           {/* Consent/Permit & Inspection Details */}
           <div className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
             <h3 className="mb-3 text-lg font-semibold text-gray-800">
-              Consent/Permit & Inspection Details (Consent/Permit No from Excel — C5)
+              Consent/Permit & Inspection Details (Consent/Permit No from Excel â€” C5)
             </h3>
             <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
               <div>
@@ -311,7 +309,7 @@ const FormModal3 = ({
                   <button
                     type="button"
                     onClick={() => openModal("consentPermitHolder")}
-                    className="flex h-10 w-10 items-center justify-center rounded-lg border border-gray-300 bg-white text-gray-600 hover:bg-gray-50 hover:text-blue-600"
+                    className="flex h-10 w-10 items-center justify-center rounded-lg border border-gray-300 bg-white text-gray-600 hover:bg-gray-50 hover:text-brand-600"
                     title="Add new consent/permit holder"
                   >
                     <svg
@@ -333,14 +331,14 @@ const FormModal3 = ({
               <div>
                 <label className="mb-1 block text-sm font-medium text-gray-600">
                   Consent/Permit No{" "}
-                  <span className="text-xs text-gray-500">(From Excel — C5)</span>
+                  <span className="text-xs text-gray-500">(From Excel â€” C5)</span>
                 </label>
                 <input
                   type="text"
                   name="consentPermitNo"
                   value={formData.consentPermitNo}
                   onChange={handleInputChangeWithBackgroundUpdate}
-                  className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
                   placeholder="Auto-filled from Excel cell C5"
                 />
               </div>
@@ -354,7 +352,7 @@ const FormModal3 = ({
                   name="inspectionReportNo"
                   value={formData.inspectionReportNo}
                   onChange={handleInputChangeWithBackgroundUpdate}
-                  className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
                   placeholder="Enter inspection report number"
                 />
               </div>
@@ -368,7 +366,7 @@ const FormModal3 = ({
                   name="dateOfInspection"
                   value={formData.dateOfInspection}
                   onChange={handleInputChangeWithBackgroundUpdate}
-                  className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
                 />
               </div>
               <div>
@@ -389,15 +387,15 @@ const FormModal3 = ({
               <div>
                 <label className="mb-1 block text-sm font-medium text-gray-600">
                   Uncertainty{" "}
-                  <span className="text-xs text-gray-500">(From Uncertainty Sheet — F104)</span>
+                  <span className="text-xs text-gray-500">(From Uncertainty Sheet â€” F104)</span>
                 </label>
                 <input
                   type="text"
                   name="uncertainty"
                   value={formData.uncertainty}
                   onChange={handleInputChangeWithBackgroundUpdate}
-                  className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-                  placeholder="e.g., ±3.03% (from Uncertainty Sheet F104)"
+                  className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
+                  placeholder="e.g., Â±3.03% (from Uncertainty Sheet F104)"
                 />
               </div>
             </div>
@@ -412,14 +410,14 @@ const FormModal3 = ({
               <div>
                 <label className="mb-1 block text-sm font-medium text-gray-600">
                   Site Name{" "}
-                  <span className="text-xs text-gray-500">(From Excel — C4)</span>
+                  <span className="text-xs text-gray-500">(From Excel â€” C4)</span>
                 </label>
                 <input
                   type="text"
                   name="siteName"
                   value={formData.siteName}
                   onChange={handleInputChangeWithBackgroundUpdate}
-                  className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
                   placeholder="Auto-filled from Excel cell C4"
                 />
               </div>
@@ -462,7 +460,7 @@ const FormModal3 = ({
                   value={formData.siteAddress}
                   onChange={handleInputChangeWithBackgroundUpdate}
                   rows="3"
-                  className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
                   placeholder="Manually entered"
                 />
               </div>
@@ -476,7 +474,7 @@ const FormModal3 = ({
                   name="siteRefPostcode"
                   value={formData.siteRefPostcode}
                   onChange={handleInputChangeWithBackgroundUpdate}
-                  className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
                 />
               </div>
               <div>
@@ -489,7 +487,7 @@ const FormModal3 = ({
                   name="irishGridRef"
                   value={formData.irishGridRef}
                   onChange={handleInputChangeWithBackgroundUpdate}
-                  className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
                 />
               </div>
             </div>
@@ -505,7 +503,7 @@ const FormModal3 = ({
                 <label className="mb-1 block text-sm font-medium text-gray-600">
                   Type of Flowmeter(s){" "}
                   <span className="text-xs text-gray-500">
-                    (From Excel — H5)
+                    (From Excel â€” H5)
                   </span>
                 </label>
                 <input
@@ -513,7 +511,7 @@ const FormModal3 = ({
                   name="secondaryDeviceType"
                   value={formData.secondaryDeviceType}
                   onChange={handleInputChangeWithBackgroundUpdate}
-                  className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
                   placeholder="Auto-filled from Excel H5"
                 />
               </div>
@@ -529,7 +527,7 @@ const FormModal3 = ({
                   name="flowmeterSensorSerial"
                   value={formData.flowmeterSensorSerial}
                   onChange={handleInputChangeWithBackgroundUpdate}
-                  className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
                   placeholder="e.g., YSN/MN138215937 (from Excel H6)"
                 />
               </div>
@@ -543,7 +541,7 @@ const FormModal3 = ({
                   name="niwAssetId"
                   value={formData.niwAssetId}
                   onChange={handleInputChangeWithBackgroundUpdate}
-                  className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
                   placeholder="e.g., 0324638 (manually enter or from DB)"
                 />
               </div>
@@ -565,7 +563,7 @@ const FormModal3 = ({
                   value={formData.siteDescription}
                   onChange={handleInputChangeWithBackgroundUpdate}
                   rows="4"
-                  className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
                   placeholder="manually entered"
                 />
               </div>
@@ -578,7 +576,7 @@ const FormModal3 = ({
                   value={formData.flowmeterLocation}
                   onChange={handleInputChangeWithBackgroundUpdate}
                   rows="4"
-                  className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
                   placeholder="manually entered"
                 />
               </div>
@@ -597,7 +595,7 @@ const FormModal3 = ({
                   <label className="mb-1 block text-sm font-medium text-gray-600">
                     Emission Point Name{" "}
                     <span className="text-xs text-gray-500">
-                      (From Excel — C4)
+                      (From Excel â€” C4)
                     </span>
                   </label>
                   <div className="rounded-lg border border-gray-300 bg-gray-50 px-3 py-2 text-sm font-medium text-gray-800">
@@ -615,7 +613,7 @@ const FormModal3 = ({
                   <label className="mb-1 block text-sm font-medium text-gray-600">
                     WOC or Permit No{" "}
                     <span className="text-xs text-gray-500">
-                      (From Excel — E5)
+                      (From Excel â€” E5)
                     </span>
                   </label>
                   <input
@@ -623,7 +621,7 @@ const FormModal3 = ({
                     name="wocNumber"
                     value={formData.wocNumber || ""}
                     onChange={handleInputChangeWithBackgroundUpdate}
-                    className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                    className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
                     placeholder="Auto-filled from Excel cell E5"
                   />
                 </div>
@@ -631,7 +629,7 @@ const FormModal3 = ({
                   <label className="mb-1 block text-sm font-medium text-gray-600">
                     Dry weather flow{" "}
                     <span className="text-xs text-gray-500">
-                      (From Excel — C10)
+                      (From Excel â€” C10)
                     </span>
                   </label>
                   <div className="relative">
@@ -640,11 +638,11 @@ const FormModal3 = ({
                       name="dryW"
                       value={formData.dryW}
                       onChange={handleInputChangeWithBackgroundUpdate}
-                      className="w-full rounded-lg border border-gray-300 py-2 pl-3 pr-20 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                      className="w-full rounded-lg border border-gray-300 py-2 pl-3 pr-20 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
                       placeholder="Auto-filled from Excel cell C10"
                     />
                     <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center rounded-r-lg border-l border-gray-300 bg-gray-50 px-3 text-sm text-gray-500">
-                      m³/day
+                      mÂ³/day
                     </span>
                   </div>
                 </div>
@@ -652,7 +650,7 @@ const FormModal3 = ({
                   <label className="mb-1 block text-sm font-medium text-gray-600">
                     Maximum daily volume{" "}
                     <span className="text-xs text-gray-500">
-                      (From Excel — C9)
+                      (From Excel â€” C9)
                     </span>
                   </label>
                   <div className="relative">
@@ -661,11 +659,11 @@ const FormModal3 = ({
                       name="maxD"
                       value={formData.maxD}
                       onChange={handleInputChangeWithBackgroundUpdate}
-                      className="w-full rounded-lg border border-gray-300 py-2 pl-3 pr-20 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                      className="w-full rounded-lg border border-gray-300 py-2 pl-3 pr-20 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
                       placeholder="Auto-filled from Excel cell C9"
                     />
                     <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center rounded-r-lg border-l border-gray-300 bg-gray-50 px-3 text-sm text-gray-500">
-                      m³/day
+                      mÂ³/day
                     </span>
                   </div>
                 </div>
@@ -673,7 +671,7 @@ const FormModal3 = ({
                   <label className="mb-1 block text-sm font-medium text-gray-600">
                     Maximum FFT flow rate{" "}
                     <span className="text-xs text-gray-500">
-                      (From Excel — C6)
+                      (From Excel â€” C6)
                     </span>
                   </label>
                   <div className="relative">
@@ -682,7 +680,7 @@ const FormModal3 = ({
                       name="maxFFT"
                       value={formData.maxFFT}
                       onChange={handleInputChangeWithBackgroundUpdate}
-                      className="w-full rounded-lg border border-gray-300 py-2 pl-3 pr-12 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                      className="w-full rounded-lg border border-gray-300 py-2 pl-3 pr-12 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
                       placeholder="Auto-filled from Excel cell C6"
                     />
                     <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center rounded-r-lg border-l border-gray-300 bg-gray-50 px-3 text-sm text-gray-500">
@@ -694,7 +692,7 @@ const FormModal3 = ({
                   <label className="mb-1 block text-sm font-medium text-gray-600">
                     Qmax of flowmeter{" "}
                     <span className="text-xs text-gray-500">
-                      (From Excel — D8)
+                      (From Excel â€” D8)
                     </span>
                   </label>
                   <div className="relative">
@@ -703,7 +701,7 @@ const FormModal3 = ({
                       name="qmaxF"
                       value={formData.qmaxF}
                       onChange={handleInputChangeWithBackgroundUpdate}
-                      className="w-full rounded-lg border border-gray-300 py-2 pl-3 pr-12 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                      className="w-full rounded-lg border border-gray-300 py-2 pl-3 pr-12 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
                       placeholder="Auto-filled from Excel cell D8"
                     />
                     <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center rounded-r-lg border-l border-gray-300 bg-gray-50 px-3 text-sm text-gray-500">
@@ -733,7 +731,7 @@ const FormModal3 = ({
                   name="field1"
                   value={formData.field1}
                   onChange={handleInputChangeWithBackgroundUpdate}
-                  className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
                   placeholder="Secondary verification details"
                 />
                 <div className="mt-1 text-xs text-gray-500">
@@ -749,7 +747,7 @@ const FormModal3 = ({
                   name="field2"
                   value={formData.field2}
                   onChange={handleInputChangeWithBackgroundUpdate}
-                  className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
                   placeholder="MCERTS certification details"
                 />
                 <div className="mt-1 text-xs text-gray-500">
@@ -765,7 +763,7 @@ const FormModal3 = ({
                   value={formData.field3}
                   onChange={handleInputChangeWithBackgroundUpdate}
                   rows="3"
-                  className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
                   placeholder="Site maintenance arrangements"
                 />
                 <div className="mt-1 text-xs text-gray-500">
@@ -830,7 +828,7 @@ const FormModal3 = ({
                     <button
                       type="button"
                       onClick={() => openModal("references")}
-                      className="flex w-full items-center justify-center rounded-md bg-blue-50 px-3 py-2 text-sm text-blue-600 hover:bg-blue-100"
+                      className="flex w-full items-center justify-center rounded-md bg-brand-50 px-3 py-2 text-sm text-brand-600 hover:bg-brand-100"
                       title="Add new reference"
                     >
                       <svg
@@ -875,7 +873,7 @@ const FormModal3 = ({
                     value={formData.siteProcessDescription}
                     onChange={handleInputChangeWithBackgroundUpdate}
                     rows="4"
-                    className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                    className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
                   />
                 </div>
                 <div>
@@ -890,7 +888,7 @@ const FormModal3 = ({
                     }
                     accept="image/*"
                     multiple
-                    className="block w-full text-sm text-gray-500 file:mr-4 file:rounded-lg file:border-0 file:bg-blue-50 file:px-4 file:py-2 file:text-sm file:font-medium file:text-blue-700 hover:file:bg-blue-100"
+                    className="block w-full text-sm text-gray-500 file:mr-4 file:rounded-lg file:border-0 file:bg-brand-50 file:px-4 file:py-2 file:text-sm file:font-medium file:text-brand-700 hover:file:bg-brand-100"
                   />
                   <div className="mt-1 text-xs text-gray-500">
                     Upload multiple site process and schematic images (maximum 5
@@ -957,7 +955,7 @@ const FormModal3 = ({
                                     )
                                   }
                                   placeholder="Add caption"
-                                  className="mt-2 w-full rounded border border-gray-300 px-2 py-1 text-xs focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                  className="mt-2 w-full rounded border border-gray-300 px-2 py-1 text-xs focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
                                 />
                                 <button
                                   type="button"
@@ -1007,7 +1005,7 @@ const FormModal3 = ({
                     value={formData.aerialViewDescription}
                     onChange={handleInputChangeWithBackgroundUpdate}
                     rows="4"
-                    className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                    className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
                   />
                 </div>
                 <div>
@@ -1022,7 +1020,7 @@ const FormModal3 = ({
                     }
                     accept="image/*"
                     multiple
-                    className="block w-full text-sm text-gray-500 file:mr-4 file:rounded-lg file:border-0 file:bg-blue-50 file:px-4 file:py-2 file:text-sm file:font-medium file:text-blue-700 hover:file:bg-blue-100"
+                    className="block w-full text-sm text-gray-500 file:mr-4 file:rounded-lg file:border-0 file:bg-brand-50 file:px-4 file:py-2 file:text-sm file:font-medium file:text-brand-700 hover:file:bg-brand-100"
                   />
                   <div className="mt-1 text-xs text-gray-500">
                     Upload multiple aerial view images (maximum 5 files). Images
@@ -1088,7 +1086,7 @@ const FormModal3 = ({
                                     )
                                   }
                                   placeholder="Add caption"
-                                  className="mt-2 w-full rounded border border-gray-300 px-2 py-1 text-xs focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                  className="mt-2 w-full rounded border border-gray-300 px-2 py-1 text-xs focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
                                 />
                                 <button
                                   type="button"
@@ -1135,17 +1133,17 @@ const FormModal3 = ({
               <div className="space-y-3">
                 <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
                   {/* Fixed paragraph preview */}
-                  <div className="col-span-2 rounded-lg border border-blue-100 bg-blue-50 p-3 text-sm text-gray-700">
-                    <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-blue-600">
-                      Paragraph — Fixed text (variables: C69, user input)
+                  <div className="col-span-2 rounded-lg border border-brand-100 bg-brand-50 p-3 text-sm text-gray-700">
+                    <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-brand-600">
+                      Paragraph â€” Fixed text (variables: C69, user input)
                     </p>
                     <p>
                       There is an inlet open channel rectangular flume installation used to monitor the volume of effluent going forward to treatment and thus representative of treated flow being discharged to the watercourse. The flume is manufactured from stainless steel and has a smooth concrete approach channel. The primary device is compliant with the key dimensional requirements of BS ISO 4359 and is in good condition. Flow is free discharging with no evidence of the flume ever having been drowned under operating conditions. Flow within the approach channel appears uniform and steady with an apparent even velocity distribution, no significant hydraulic disturbances were apparent. There is a visible top scum mark located{" "}
-                      <span className="font-semibold text-blue-700">
+                      <span className="font-semibold text-brand-700">
                         [{formData.visibleScumMark || "C69"}]
                       </span>{" "}
                       above zero1, equating to approximately{" "}
-                      <span className="font-semibold text-blue-700">
+                      <span className="font-semibold text-brand-700">
                         [{formData.variableflow || "variable flow"}]
                       </span>
                     </p>
@@ -1153,11 +1151,11 @@ const FormModal3 = ({
                       Visible scum mark is difficult to accurately measure and is used only as a guide for flows at site
                     </p>
                   </div>
-                  {/* visibleScumMark — auto-filled from Excel C69 */}
+                  {/* visibleScumMark â€” auto-filled from Excel C69 */}
                   <div>
                     <label className="mb-1 block text-sm font-medium text-gray-600">
                       Scum Mark Height{" "}
-                      <span className="text-xs text-gray-400">(From Excel — C69)</span>
+                      <span className="text-xs text-gray-400">(From Excel â€” C69)</span>
                     </label>
                     <input
                       type="text"
@@ -1169,7 +1167,7 @@ const FormModal3 = ({
                       placeholder="Auto-filled from Excel cell C69"
                     />
                   </div>
-                  {/* variableflow — user-filled */}
+                  {/* variableflow â€” user-filled */}
                   <div>
                     <label className="mb-1 block text-sm font-medium text-gray-600">
                       Variable Flow
@@ -1179,7 +1177,7 @@ const FormModal3 = ({
                       name="variableflow"
                       value={formData.variableflow || ""}
                       onChange={handleInputChangeWithBackgroundUpdate}
-                      className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                      className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
                       placeholder="Enter variable flow value"
                     />
                   </div>
@@ -1198,7 +1196,7 @@ const FormModal3 = ({
                     }
                     accept="image/*"
                     multiple
-                    className="block w-full text-sm text-gray-500 file:mr-4 file:rounded-lg file:border-0 file:bg-blue-50 file:px-4 file:py-2 file:text-sm file:font-medium file:text-blue-700 hover:file:bg-blue-100"
+                    className="block w-full text-sm text-gray-500 file:mr-4 file:rounded-lg file:border-0 file:bg-brand-50 file:px-4 file:py-2 file:text-sm file:font-medium file:text-brand-700 hover:file:bg-brand-100"
                   />
                   <div className="mt-1 text-xs text-gray-500">
                     Upload multiple primary device images (maximum 5 files).
@@ -1250,7 +1248,7 @@ const FormModal3 = ({
                                     )
                                   }
                                   placeholder="Add caption"
-                                  className="mt-2 w-full rounded border border-gray-300 px-2 py-1 text-xs focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                  className="mt-2 w-full rounded border border-gray-300 px-2 py-1 text-xs focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
                                 />
                                 <button
                                   type="button"
@@ -1300,7 +1298,7 @@ const FormModal3 = ({
                     value={formData.secondaryDeviceDescription}
                     onChange={handleInputChangeWithBackgroundUpdate}
                     rows="4"
-                    className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                    className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
                     placeholder="Enter description for the secondary device..."
                   />
                 </div>
@@ -1318,7 +1316,7 @@ const FormModal3 = ({
                     }
                     accept="image/*"
                     multiple
-                    className="block w-full text-sm text-gray-500 file:mr-4 file:rounded-lg file:border-0 file:bg-blue-50 file:px-4 file:py-2 file:text-sm file:font-medium file:text-blue-700 hover:file:bg-blue-100"
+                    className="block w-full text-sm text-gray-500 file:mr-4 file:rounded-lg file:border-0 file:bg-brand-50 file:px-4 file:py-2 file:text-sm file:font-medium file:text-brand-700 hover:file:bg-brand-100"
                   />
                   <div className="mt-1 text-xs text-gray-500">
                     Upload multiple secondary device images (maximum 5 files).
@@ -1371,7 +1369,7 @@ const FormModal3 = ({
                                     )
                                   }
                                   placeholder="Add caption"
-                                  className="mt-2 w-full rounded border border-gray-300 px-2 py-1 text-xs focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                  className="mt-2 w-full rounded border border-gray-300 px-2 py-1 text-xs focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
                                 />
                                 <button
                                   type="button"
@@ -1425,7 +1423,7 @@ const FormModal3 = ({
                     }
                     accept="image/*"
                     multiple
-                    className="block w-full text-sm text-gray-500 file:mr-4 file:rounded-lg file:border-0 file:bg-blue-50 file:px-4 file:py-2 file:text-sm file:font-medium file:text-blue-700 hover:file:bg-blue-100"
+                    className="block w-full text-sm text-gray-500 file:mr-4 file:rounded-lg file:border-0 file:bg-brand-50 file:px-4 file:py-2 file:text-sm file:font-medium file:text-brand-700 hover:file:bg-brand-100"
                   />
                   <div className="mt-1 text-xs text-gray-500">
                     Upload multiple verification images (maximum 5 files).
@@ -1476,7 +1474,7 @@ const FormModal3 = ({
                                     )
                                   }
                                   placeholder="Add caption"
-                                  className="mt-2 w-full rounded border border-gray-300 px-2 py-1 text-xs focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                  className="mt-2 w-full rounded border border-gray-300 px-2 py-1 text-xs focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
                                 />
                                 <button
                                   type="button"
@@ -1511,9 +1509,9 @@ const FormModal3 = ({
 
                 <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
                   {/* --- Paragraph 1 preview --- */}
-                  <div className="col-span-2 rounded-lg border border-blue-100 bg-blue-50 p-3 text-sm text-gray-700">
-                    <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-blue-600">
-                      Paragraph 1 — Fixed text (variables: I26, I27)
+                  <div className="col-span-2 rounded-lg border border-brand-100 bg-brand-50 p-3 text-sm text-gray-700">
+                    <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-brand-600">
+                      Paragraph 1 â€” Fixed text (variables: I26, I27)
                     </p>
                     <p>
                       The flow measurement structure includes for a fixed
@@ -1521,12 +1519,12 @@ const FormModal3 = ({
                       validation. A removable calibration target plate was
                       positioned in the path of the ultra-sonic sensor. The
                       plate was measured at{" "}
-                      <span className="font-semibold text-blue-700">
+                      <span className="font-semibold text-brand-700">
                         [{formData.verificationPlateMeasurement || "I26"}]
                       </span>
                       mm above the zero datum. The flow instrument displayed an
                       average of{" "}
-                      <span className="font-semibold text-blue-700">
+                      <span className="font-semibold text-brand-700">
                         [{formData.verificationInstrumentDisplay || "I27"}]
                       </span>
                       mm taken from the 20 separate head readings.
@@ -1536,7 +1534,7 @@ const FormModal3 = ({
                     <label className="mb-1 block text-sm font-medium text-gray-600">
                       Plate Measured Height (mm){" "}
                       <span className="text-xs text-gray-500">
-                        (From Excel — I26)
+                        (From Excel â€” I26)
                       </span>
                     </label>
                     <input
@@ -1544,7 +1542,7 @@ const FormModal3 = ({
                       name="verificationPlateMeasurement"
                       value={formData.verificationPlateMeasurement}
                       onChange={handleInputChangeWithBackgroundUpdate}
-                      className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                      className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
                       placeholder="Auto-filled from Excel cell I26"
                     />
                   </div>
@@ -1552,7 +1550,7 @@ const FormModal3 = ({
                     <label className="mb-1 block text-sm font-medium text-gray-600">
                       Instrument Average Display (mm){" "}
                       <span className="text-xs text-gray-500">
-                        (From Excel — I27)
+                        (From Excel â€” I27)
                       </span>
                     </label>
                     <input
@@ -1560,23 +1558,23 @@ const FormModal3 = ({
                       name="verificationInstrumentDisplay"
                       value={formData.verificationInstrumentDisplay}
                       onChange={handleInputChangeWithBackgroundUpdate}
-                      className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                      className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
                       placeholder="Auto-filled from Excel cell I27"
                     />
                   </div>
 
                   {/* --- Paragraph 2 preview --- */}
-                  <div className="col-span-2 rounded-lg border border-blue-100 bg-blue-50 p-3 text-sm text-gray-700">
-                    <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-blue-600">
-                      Paragraph 2 — Fixed text (variables: D23, D24)
+                  <div className="col-span-2 rounded-lg border border-brand-100 bg-brand-50 p-3 text-sm text-gray-700">
+                    <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-brand-600">
+                      Paragraph 2 â€” Fixed text (variables: D23, D24)
                     </p>
                     <p>
                       A{" "}
-                      <span className="font-semibold text-blue-700">
+                      <span className="font-semibold text-brand-700">
                         [{formData.verificationHeadError || "D23"}]
                       </span>
                       mm head error and a{" "}
-                      <span className="font-semibold text-blue-700">
+                      <span className="font-semibold text-brand-700">
                         [{formData.verificationRepeatabilityError || "D24"}]
                       </span>
                       mm repeatability error have been applied to the
@@ -1589,7 +1587,7 @@ const FormModal3 = ({
                     <label className="mb-1 block text-sm font-medium text-gray-600">
                       Head Error (mm){" "}
                       <span className="text-xs text-gray-500">
-                        (From Excel — D23)
+                        (From Excel â€” D23)
                       </span>
                     </label>
                     <input
@@ -1597,7 +1595,7 @@ const FormModal3 = ({
                       name="verificationHeadError"
                       value={formData.verificationHeadError}
                       onChange={handleInputChangeWithBackgroundUpdate}
-                      className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                      className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
                       placeholder="Auto-filled from Excel cell D23"
                     />
                   </div>
@@ -1605,7 +1603,7 @@ const FormModal3 = ({
                     <label className="mb-1 block text-sm font-medium text-gray-600">
                       Repeatability Error (mm){" "}
                       <span className="text-xs text-gray-500">
-                        (From Excel — D24)
+                        (From Excel â€” D24)
                       </span>
                     </label>
                     <input
@@ -1613,12 +1611,12 @@ const FormModal3 = ({
                       name="verificationRepeatabilityError"
                       value={formData.verificationRepeatabilityError}
                       onChange={handleInputChangeWithBackgroundUpdate}
-                      className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                      className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
                       placeholder="Auto-filled from Excel cell D24"
                     />
                   </div>
 
-                  {/* --- Calibration Reference — fully fixed --- */}
+                  {/* --- Calibration Reference â€” fully fixed --- */}
                   <div className="col-span-2">
                     <label className="mb-1 block text-sm font-medium text-gray-600">
                       Calibration Reference{" "}
@@ -1651,7 +1649,7 @@ const FormModal3 = ({
                     value={formData.nieaDescription}
                     onChange={handleInputChangeWithBackgroundUpdate}
                     rows="4"
-                    className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                    className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
                     placeholder="Enter description for NIEA viewpoint..."
                   />
                 </div>
@@ -1669,7 +1667,7 @@ const FormModal3 = ({
                     }
                     accept="image/*"
                     multiple
-                    className="block w-full text-sm text-gray-500 file:mr-4 file:rounded-lg file:border-0 file:bg-blue-50 file:px-4 file:py-2 file:text-sm file:font-medium file:text-blue-700 hover:file:bg-blue-100"
+                    className="block w-full text-sm text-gray-500 file:mr-4 file:rounded-lg file:border-0 file:bg-brand-50 file:px-4 file:py-2 file:text-sm file:font-medium file:text-brand-700 hover:file:bg-brand-100"
                   />
                   <div className="mt-1 text-xs text-gray-500">
                     Upload multiple NIEA viewpoint images (maximum 5 files).
@@ -1716,7 +1714,7 @@ const FormModal3 = ({
                                   )
                                 }
                                 placeholder="Add caption"
-                                className="mt-2 w-full rounded border border-gray-300 px-2 py-1 text-xs focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                className="mt-2 w-full rounded border border-gray-300 px-2 py-1 text-xs focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
                               />
                               <button
                                 type="button"
@@ -1770,7 +1768,7 @@ const FormModal3 = ({
                     value={formData.routineMaintenanceDescription}
                     onChange={handleInputChangeWithBackgroundUpdate}
                     rows="4"
-                    className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                    className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
                     placeholder="NIW operational personnel record maintenance activities..."
                   />
                 </div>
@@ -1791,7 +1789,7 @@ const FormModal3 = ({
                     }
                     accept="image/*"
                     multiple
-                    className="block w-full text-sm text-gray-500 file:mr-4 file:rounded-lg file:border-0 file:bg-blue-50 file:px-4 file:py-2 file:text-sm file:font-medium file:text-blue-700 hover:file:bg-blue-100"
+                    className="block w-full text-sm text-gray-500 file:mr-4 file:rounded-lg file:border-0 file:bg-brand-50 file:px-4 file:py-2 file:text-sm file:font-medium file:text-brand-700 hover:file:bg-brand-100"
                   />
                   <div className="mt-1 text-xs text-gray-500">
                     Upload multiple routine maintenance images (maximum 5
@@ -1847,7 +1845,7 @@ const FormModal3 = ({
                                       )
                                     }
                                     placeholder="Add caption"
-                                    className="mt-2 w-full rounded border border-gray-300 px-2 py-1 text-xs focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                    className="mt-2 w-full rounded border border-gray-300 px-2 py-1 text-xs focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
                                   />
                                   <button
                                     type="button"
@@ -1898,14 +1896,14 @@ const FormModal3 = ({
                     value={formData.routineVerificationDescription}
                     onChange={handleInputChangeWithBackgroundUpdate}
                     rows="4"
-                    className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                    className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
                     placeholder="The flow sensor has a fixed calibration bracket..."
                   />
                 </div>
                 <div>
                   <label className="mb-1 block text-sm font-medium text-gray-600">
                     Next Flow Validation Date{" "}
-                    <span className="text-xs text-gray-500">(Calculated — Date of Inspection + 1 year)</span>
+                    <span className="text-xs text-gray-500">(Calculated â€” Date of Inspection + 1 year)</span>
                   </label>
                   <input
                     type="text"
@@ -1957,7 +1955,7 @@ const FormModal3 = ({
                     }
                     accept="image/*"
                     multiple
-                    className="block w-full text-sm text-gray-500 file:mr-4 file:rounded-lg file:border-0 file:bg-blue-50 file:px-4 file:py-2 file:text-sm file:font-medium file:text-blue-700 hover:file:bg-blue-100"
+                    className="block w-full text-sm text-gray-500 file:mr-4 file:rounded-lg file:border-0 file:bg-brand-50 file:px-4 file:py-2 file:text-sm file:font-medium file:text-brand-700 hover:file:bg-brand-100"
                   />
                   <div className="mt-1 text-xs text-gray-500">
                     Upload multiple routine verification images (maximum 5
@@ -2012,7 +2010,7 @@ const FormModal3 = ({
                                       )
                                     }
                                     placeholder="Add caption"
-                                    className="mt-2 w-full rounded border border-gray-300 px-2 py-1 text-xs focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                    className="mt-2 w-full rounded border border-gray-300 px-2 py-1 text-xs focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
                                   />
                                   <button
                                     type="button"
@@ -2059,7 +2057,7 @@ const FormModal3 = ({
                 The following is a list of equipment taken to each inspection.
               </p>
 
-              {/* Fixed Equipment Table — Site survey vehicle SIRIS 4 */}
+              {/* Fixed Equipment Table â€” Site survey vehicle SIRIS 4 */}
               <div className="overflow-x-auto rounded-lg border border-purple-300">
                 <table className="w-full text-sm">
                   <thead>
@@ -2076,19 +2074,19 @@ const FormModal3 = ({
                   </thead>
                   <tbody className="text-gray-700">
                     {[
-                      ["Engineers level", "335620", "±2.0mm"],
-                      ["1000mm Steel rule", "Shinwa (Purple)", "±0.5mm"],
-                      ["3m Talmeter tape", "Purple label", "±0.5mm"],
-                      ["5m Macallister tape", "Purple label", "±0.5mm"],
-                      ["ISOTech IDM (DVM)", "85003701", "±0.008% 1 digit"],
-                      ["Ridgid Micro LM-100 (Laser distance meter)", "SZQA0470080416", "±0.5mm"],
+                      ["Engineers level", "335620", "Â±2.0mm"],
+                      ["1000mm Steel rule", "Shinwa (Purple)", "Â±0.5mm"],
+                      ["3m Talmeter tape", "Purple label", "Â±0.5mm"],
+                      ["5m Macallister tape", "Purple label", "Â±0.5mm"],
+                      ["ISOTech IDM (DVM)", "85003701", "Â±0.008% 1 digit"],
+                      ["Ridgid Micro LM-100 (Laser distance meter)", "SZQA0470080416", "Â±0.5mm"],
                       ["Gas Detector", "", "n/a"],
-                      ["PT878", "GAA1518003", "±3.06%"],
-                      ["Nivus OCM Pro", "Van A (Purple Label)", "±5.5%"],
-                      ["Nivus Wedge", "Van A (Purple Label)", "±5.5%"],
-                      ["Calibration plate", "CRP 10.02", "±2mm (Reference only)"],
-                      ["Engineers Staff (Red/White)", "Purple label", "±1mm (Reference only)"],
-                      ["Steel Callipers", "Purple label", "±1mm (Reference only)"],
+                      ["PT878", "GAA1518003", "Â±3.06%"],
+                      ["Nivus OCM Pro", "Van A (Purple Label)", "Â±5.5%"],
+                      ["Nivus Wedge", "Van A (Purple Label)", "Â±5.5%"],
+                      ["Calibration plate", "CRP 10.02", "Â±2mm (Reference only)"],
+                      ["Engineers Staff (Red/White)", "Purple label", "Â±1mm (Reference only)"],
+                      ["Steel Callipers", "Purple label", "Â±1mm (Reference only)"],
                     ].map(([equipment, serial, uncertainty], i) => (
                       <tr key={i} className={i % 2 === 0 ? "bg-white" : "bg-gray-50"}>
                         <td className="border-r border-gray-200 px-3 py-1.5 text-center">{equipment}</td>
@@ -2112,7 +2110,7 @@ const FormModal3 = ({
                   }
                   accept="image/*"
                   multiple
-                  className="block w-full text-sm text-gray-500 file:mr-4 file:rounded-lg file:border-0 file:bg-blue-50 file:px-4 file:py-2 file:text-sm file:font-medium file:text-blue-700 hover:file:bg-blue-100"
+                  className="block w-full text-sm text-gray-500 file:mr-4 file:rounded-lg file:border-0 file:bg-brand-50 file:px-4 file:py-2 file:text-sm file:font-medium file:text-brand-700 hover:file:bg-brand-100"
                 />
                 <div className="mt-1 text-xs text-gray-500">
                   Upload multiple survey equipment images (maximum 5 files).
@@ -2179,7 +2177,7 @@ const FormModal3 = ({
                                   )
                                 }
                                 placeholder="Add caption"
-                                className="mt-2 w-full rounded border border-gray-300 px-2 py-1 text-xs focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                className="mt-2 w-full rounded border border-gray-300 px-2 py-1 text-xs focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
                               />
                               <button
                                 type="button"
@@ -2229,7 +2227,7 @@ const FormModal3 = ({
                   value={formData.appendixField1}
                   onChange={handleInputChangeWithBackgroundUpdate}
                   rows="3"
-                  className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
                   placeholder=""
                 />
               </div>
@@ -2245,7 +2243,7 @@ const FormModal3 = ({
                   }
                   accept="image/*,application/pdf"
                   multiple
-                  className="block w-full text-sm text-gray-500 file:mr-4 file:rounded-lg file:border-0 file:bg-blue-50 file:px-4 file:py-2 file:text-sm file:font-medium file:text-blue-700 hover:file:bg-blue-100"
+                  className="block w-full text-sm text-gray-500 file:mr-4 file:rounded-lg file:border-0 file:bg-brand-50 file:px-4 file:py-2 file:text-sm file:font-medium file:text-brand-700 hover:file:bg-brand-100"
                 />
                 <div className="mt-1 text-xs text-gray-500">
                   Upload multiple files (maximum 5 files). Accepted formats:
@@ -2327,7 +2325,7 @@ const FormModal3 = ({
                                   )
                                 }
                                 placeholder="Add caption"
-                                className="mt-2 w-full rounded border border-gray-300 px-2 py-1 text-xs focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                className="mt-2 w-full rounded border border-gray-300 px-2 py-1 text-xs focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
                               />
                               <button
                                 type="button"
@@ -2373,7 +2371,7 @@ const FormModal3 = ({
                   value={formData.appendixField2}
                   onChange={handleInputChangeWithBackgroundUpdate}
                   rows="3"
-                  className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
                   placeholder=""
                 />
               </div>
@@ -2389,7 +2387,7 @@ const FormModal3 = ({
                   }
                   accept="image/*,application/pdf"
                   multiple
-                  className="block w-full text-sm text-gray-500 file:mr-4 file:rounded-lg file:border-0 file:bg-blue-50 file:px-4 file:py-2 file:text-sm file:font-medium file:text-blue-700 hover:file:bg-blue-100"
+                  className="block w-full text-sm text-gray-500 file:mr-4 file:rounded-lg file:border-0 file:bg-brand-50 file:px-4 file:py-2 file:text-sm file:font-medium file:text-brand-700 hover:file:bg-brand-100"
                 />
                 <div className="mt-1 text-xs text-gray-500">
                   Upload multiple files (maximum 5 files). Accepted formats:
@@ -2471,7 +2469,7 @@ const FormModal3 = ({
                                   )
                                 }
                                 placeholder="Add caption"
-                                className="mt-2 w-full rounded border border-gray-300 px-2 py-1 text-xs focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                className="mt-2 w-full rounded border border-gray-300 px-2 py-1 text-xs focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
                               />
                               <button
                                 type="button"
@@ -2517,7 +2515,7 @@ const FormModal3 = ({
                   value={formData.appendixField3}
                   onChange={handleInputChangeWithBackgroundUpdate}
                   rows="3"
-                  className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
                   placeholder=""
                 />
               </div>
@@ -2533,7 +2531,7 @@ const FormModal3 = ({
                   }
                   accept="image/*,application/pdf"
                   multiple
-                  className="block w-full text-sm text-gray-500 file:mr-4 file:rounded-lg file:border-0 file:bg-blue-50 file:px-4 file:py-2 file:text-sm file:font-medium file:text-blue-700 hover:file:bg-blue-100"
+                  className="block w-full text-sm text-gray-500 file:mr-4 file:rounded-lg file:border-0 file:bg-brand-50 file:px-4 file:py-2 file:text-sm file:font-medium file:text-brand-700 hover:file:bg-brand-100"
                 />
                 <div className="mt-1 text-xs text-gray-500">
                   Upload multiple files (maximum 5 files). Accepted formats:
@@ -2615,7 +2613,7 @@ const FormModal3 = ({
                                   )
                                 }
                                 placeholder="Add caption"
-                                className="mt-2 w-full rounded border border-gray-300 px-2 py-1 text-xs focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                className="mt-2 w-full rounded border border-gray-300 px-2 py-1 text-xs focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
                               />
                               <button
                                 type="button"
@@ -2653,30 +2651,30 @@ const FormModal3 = ({
               Conclusions 6.0
             </h2>
 
-            {/* Section 6.1 — live preview */}
-            <div className="mb-4 rounded-lg border border-blue-100 bg-blue-50 p-3 text-sm text-gray-700">
-              <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-blue-600">
-                Section 6.1 — Fixed text (variables: F2 date, F104 uncertainty)
+            {/* Section 6.1 â€” live preview */}
+            <div className="mb-4 rounded-lg border border-brand-100 bg-brand-50 p-3 text-sm text-gray-700">
+              <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-brand-600">
+                Section 6.1 â€” Fixed text (variables: F2 date, F104 uncertainty)
               </p>
               <p>
-                Based upon flow data provided by NIW and using data for{" "}
-                <span className="font-semibold text-blue-700">
+                Based upon flow data provided by NIW and using data for{"Â "}
+                <span className="font-semibold text-brand-700">
                   [{formData.conclusionUncertaintySheetF2 || "F2 date"}]
                 </span>
-                {" "}that being a typical dry weather day, the weighted uncertainty was
-                calculated to be{" "}
-                <span className="font-semibold text-blue-700">
+                {"Â "}that being a typical dry weather day, the weighted uncertainty was
+                calculated to be{"Â "}
+                <span className="font-semibold text-brand-700">
                   [{formData.conclusionUncertaintySheetF104 || "F104 uncertainty"}]
                 </span>
-                {" "}of the total daily discharge.
+                {"Â "}of the total daily discharge.
               </p>
             </div>
 
             <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
               <div>
                 <label className="mb-1 block text-sm font-medium text-gray-600">
-                  Date used for dry weather data{" "}
-                  <span className="text-xs text-gray-500">(From Uncertainty Sheet — F2)</span>
+                  Date used for dry weather data{"Â "}
+                  <span className="text-xs text-gray-500">(From Uncertainty Sheet â€” F2)</span>
                 </label>
                 <input
                   type="text"
@@ -2689,15 +2687,15 @@ const FormModal3 = ({
               </div>
               <div>
                 <label className="mb-1 block text-sm font-medium text-gray-600">
-                  Calculated weighted uncertainty{" "}
-                  <span className="text-xs text-gray-500">(From Uncertainty Sheet — F104)</span>
+                  Calculated weighted uncertainty{"Â "}
+                  <span className="text-xs text-gray-500">(From Uncertainty Sheet â€” F104)</span>
                 </label>
                 <input
                   type="text"
                   name="conclusionUncertaintySheetF104"
                   value={formData.conclusionUncertaintySheetF104}
                   onChange={handleInputChangeWithBackgroundUpdate}
-                  className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
                   placeholder="Auto-filled from Uncertainty Sheet F104"
                 />
               </div>
@@ -2715,7 +2713,7 @@ const FormModal3 = ({
               <div className="flex items-center gap-3">
                 <div
                   className={`h-7 w-12 cursor-pointer rounded-full transition-colors duration-200 ${
-                    signatureIncluded ? "bg-blue-500" : "bg-gray-300"
+                    signatureIncluded ? "bg-brand-500" : "bg-gray-300"
                   }`}
                   onClick={() => setSignatureIncluded(!signatureIncluded)}
                 >
@@ -2739,7 +2737,7 @@ const FormModal3 = ({
                     name="signatureName"
                     value={formData.signatureName}
                     onChange={handleInputChangeWithBackgroundUpdate}
-                    className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                    className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
                   />
                 </div>
                 <div>
@@ -2751,7 +2749,7 @@ const FormModal3 = ({
                     name="signatureCompany"
                     value={formData.signatureCompany}
                     onChange={handleInputChangeWithBackgroundUpdate}
-                    className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                    className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
                   />
                 </div>
               </div>
@@ -2772,7 +2770,7 @@ const FormModal3 = ({
             <Button
               type="submit"
               disabled={isCreatingForm || isGenerating}
-              className="rounded-lg bg-blue-500 px-4 py-2 font-medium text-white hover:bg-blue-600 disabled:cursor-not-allowed disabled:opacity-50"
+              className="rounded-lg bg-brand-500 px-4 py-2 font-medium text-white hover:bg-brand-600 disabled:cursor-not-allowed disabled:opacity-50"
             >
               {isCreatingForm ? (
                 <div className="flex items-center space-x-2">

@@ -1,4 +1,4 @@
-import React from "react";
+﻿import React from "react";
 
 // Simple Button component
 const Button = ({
@@ -38,12 +38,12 @@ const AddValueModal = ({ isOpen, onClose, value, onChange, onAdd }) => {
             value={value}
             onChange={onChange}
             placeholder="Enter value"
-            className="flex-1 rounded-lg border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+            className="flex-1 rounded-lg border border-gray-300 px-3 py-2 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
             onKeyPress={handleKeyPress}
           />
           <Button
             onClick={onAdd}
-            className="rounded-lg bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
+            className="rounded-lg bg-brand-500 px-4 py-2 text-white hover:bg-brand-600"
           >
             Add
           </Button>

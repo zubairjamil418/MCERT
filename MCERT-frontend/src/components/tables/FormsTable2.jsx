@@ -1,4 +1,4 @@
-import React from "react";
+﻿import React from "react";
 import Card from "../card";
 
 // Simple Button component
@@ -57,7 +57,7 @@ const FormsTable = ({
         <div className="flex items-center justify-center py-8">
           <div className="flex items-center space-x-2">
             <svg
-              className="h-6 w-6 animate-spin text-blue-500"
+              className="h-6 w-6 animate-spin text-brand-500"
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
               viewBox="0 0 24 24"
@@ -109,8 +109,8 @@ const FormsTable = ({
       {!isLoadingForms && !error && (
         <>
           {selectedIds.size > 0 && (
-            <div className="mb-4 flex items-center justify-between rounded-lg bg-blue-50 px-4 py-3 dark:bg-blue-900/20">
-              <span className="text-sm font-medium text-blue-700 dark:text-blue-300">
+            <div className="mb-4 flex items-center justify-between rounded-lg bg-brand-50 px-4 py-3 dark:bg-brand-900/20">
+              <span className="text-sm font-medium text-brand-700 dark:text-brand-300">
                 {selectedIds.size} form{selectedIds.size !== 1 ? "s" : ""} selected
               </span>
               <div className="flex items-center gap-2">
@@ -134,7 +134,7 @@ const FormsTable = ({
                     checked={allSelected}
                     ref={(el) => { if (el) el.indeterminate = someSelected; }}
                     onChange={onToggleSelectAll}
-                    className="h-4 w-4 cursor-pointer rounded border-gray-300 text-blue-600 focus:ring-blue-500 dark:border-gray-600"
+                    className="h-4 w-4 cursor-pointer rounded border-gray-300 text-brand-600 focus:ring-brand-500 dark:border-gray-600"
                   />
                 </th>
                 <th className="px-4 py-4 text-left font-semibold text-gray-700 dark:text-gray-300">
@@ -168,13 +168,13 @@ const FormsTable = ({
                       type="checkbox"
                       checked={selectedIds.has(form._id || form.id)}
                       onChange={() => onToggleSelect(form._id || form.id)}
-                      className="h-4 w-4 cursor-pointer rounded border-gray-300 text-blue-600 focus:ring-blue-500 dark:border-gray-600"
+                      className="h-4 w-4 cursor-pointer rounded border-gray-300 text-brand-600 focus:ring-brand-500 dark:border-gray-600"
                     />
                   </td>
                   <td className="px-4 py-4">
                     <div className="flex items-center">
-                      <div className="mr-3 flex h-10 w-10 items-center justify-center rounded-lg bg-blue-100 dark:bg-blue-900">
-                        <span className="text-sm font-semibold text-blue-600 dark:text-blue-400">
+                      <div className="mr-3 flex h-10 w-10 items-center justify-center rounded-lg bg-brand-100 dark:bg-brand-900">
+                        <span className="text-sm font-semibold text-brand-600 dark:text-brand-400">
                           {form?.siteName?.charAt(0) || "F"}
                         </span>
                       </div>
@@ -220,7 +220,7 @@ const FormsTable = ({
                         className={`rounded-md px-3 py-1.5 text-sm transition-colors duration-200 ${
                           isLoadingFormById
                             ? "cursor-not-allowed bg-gray-100 text-gray-400 dark:bg-gray-800 dark:text-gray-600"
-                            : "bg-blue-100 text-blue-600 hover:bg-blue-200 dark:bg-blue-900 dark:text-blue-300 dark:hover:bg-blue-800"
+                            : "bg-brand-100 text-brand-600 hover:bg-brand-200 dark:bg-brand-900 dark:text-brand-300 dark:hover:bg-brand-800"
                         }`}
                       >
                         {isLoadingFormById ? "Loading..." : "Edit"}
@@ -295,7 +295,7 @@ const FormsTable = ({
                       onClick={() => handlePageChange(page)}
                       className={`rounded-md px-3 py-1 text-sm font-medium transition-colors ${
                         isActive
-                          ? "bg-blue-600 text-white dark:bg-blue-500"
+                          ? "bg-brand-600 text-white dark:bg-brand-500"
                           : "border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600"
                       }`}
                     >
@@ -348,7 +348,7 @@ const FormsTable = ({
           </p>
           <Button
             onClick={handleAddNewForm}
-            className="rounded-lg bg-blue-500 px-6 py-3 font-medium text-white transition-colors duration-200 hover:bg-blue-600"
+            className="rounded-lg bg-brand-500 px-6 py-3 font-medium text-white transition-colors duration-200 hover:bg-brand-600"
           >
             Create Your First Form
           </Button>

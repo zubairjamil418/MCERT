@@ -48,7 +48,7 @@ export function SidebarLinks(props) {
                   {route.icon ? route.icon : <DashIcon />}{" "}
                 </span>
                 <p
-                  className={`leading-1 ml-4 flex ${
+                  className={`leading-1 ml-4 flex text-sm ${
                     isActive === true
                       ? "font-bold text-navy-700 dark:text-white"
                       : "font-medium text-gray-600"

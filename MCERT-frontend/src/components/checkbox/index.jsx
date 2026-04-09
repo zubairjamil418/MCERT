@@ -1,4 +1,4 @@
-const Checkbox = (props) => {
+﻿const Checkbox = (props) => {
   const { extra, color, ...rest } = props;
   return (
     <input
@@ -9,7 +9,7 @@ const Checkbox = (props) => {
         color === "red"
           ? "checked:border-none checked:bg-red-500 dark:checked:bg-red-400"
           : color === "blue"
-          ? "checked:border-none checked:bg-blue-500 dark:checked:bg-blue-400"
+          ? "checked:border-none checked:bg-brand-500 dark:checked:bg-brand-400"
           : color === "green"
           ? "checked:border-none checked:bg-green-500 dark:checked:bg-green-400"
           : color === "yellow"

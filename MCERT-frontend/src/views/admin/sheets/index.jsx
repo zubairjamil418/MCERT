@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useAuth } from "../../../contexts/AuthContext.jsx";
 import { useSearchParams } from "react-router-dom";
 import { DocumentEditor } from "@onlyoffice/document-editor-react";
-import { Container, Typography } from "@mui/material";
+import Card from "components/card";
 
 const Sheets = () => {
   const { authFetch } = useAuth();
@@ -67,18 +67,19 @@ const Sheets = () => {
   };
 
   return (
-    <Container maxWidth="lg" sx={{ mt: 4 }}>
-      {/* <div id="editor" style={{ height: '90vh', border: '1px solid #ccc' }} /> */}
-      <div style={{ height: "90vh" }}>
-        <DocumentEditor
-          id="docxEditor"
-          documentServerUrl="https://sirisreports.xyz"
-          config={config}
-          events_onDocumentReady={onDocumentReady}
-          onLoadComponentError={onLoadComponentError}
-        />
-      </div>
-    </Container>
+    <div className="mt-3 grid grid-cols-1 gap-5">
+      <Card className="overflow-hidden p-0">
+        <div style={{ height: "90vh" }}>
+          <DocumentEditor
+            id="docxEditor"
+            documentServerUrl="https://sirisreports.xyz"
+            config={config}
+            events_onDocumentReady={onDocumentReady}
+            onLoadComponentError={onLoadComponentError}
+          />
+        </div>
+      </Card>
+    </div>
   );
 };
 
