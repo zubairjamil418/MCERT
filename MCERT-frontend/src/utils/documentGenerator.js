@@ -186,8 +186,46 @@ const dataURLToBytes = (dataURL) => {
 };
 
 const DEFAULT_IMAGE_SIZE = { width: 530, height: 220 };
-const LARGE_IMAGE_SIZE = { width: 530, height: 220 };
+const LARGE_IMAGE_SIZE = { width: 530, height: 400 };
 const SMALL_IMAGE_SIZE = { width: 230, height: 200 };
+
+// Read natural dimensions from PNG/JPEG bytes
+const getImageNaturalSize = (bytes) => {
+  try {
+    const d = bytes instanceof Uint8Array ? bytes : new Uint8Array(bytes);
+    // PNG: width at offset 16, height at offset 20 (big-endian 4 bytes)
+    if (d[0] === 0x89 && d[1] === 0x50 && d[2] === 0x4e && d[3] === 0x47) {
+      const w = (d[16] << 24) | (d[17] << 16) | (d[18] << 8) | d[19];
+      const h = (d[20] << 24) | (d[21] << 16) | (d[22] << 8) | d[23];
+      if (w > 0 && h > 0) return { w, h };
+    }
+    // JPEG: scan for SOF0/SOF2 marker (0xFF 0xC0 or 0xFF 0xC2)
+    if (d[0] === 0xff && d[1] === 0xd8) {
+      let i = 2;
+      while (i < d.length - 9) {
+        if (d[i] === 0xff) {
+          const marker = d[i + 1];
+          if (marker === 0xc0 || marker === 0xc2) {
+            const h = (d[i + 5] << 8) | d[i + 6];
+            const w = (d[i + 7] << 8) | d[i + 8];
+            if (w > 0 && h > 0) return { w, h };
+          }
+          const len = (d[i + 2] << 8) | d[i + 3];
+          i += 2 + len;
+        } else {
+          i++;
+        }
+      }
+    }
+  } catch (_) { /* fall through */ }
+  return null;
+};
+
+// Scale image to fit within maxW x maxH while preserving aspect ratio
+const fitWithinBounds = (naturalW, naturalH, maxW, maxH) => {
+  const ratio = Math.min(maxW / naturalW, maxH / naturalH, 1);
+  return [Math.round(naturalW * ratio), Math.round(naturalH * ratio)];
+};
 
 // Predefine empty captions to avoid undefined template tags
 const ensureCaptionPlaceholders = (data, prefix, count = 5) => {
@@ -196,7 +234,131 @@ const ensureCaptionPlaceholders = (data, prefix, count = 5) => {
     if (data[key] === undefined) data[key] = "";
   }
 };
-// (Captions are set directly as strings in the data object below; no extra processing needed)
+
+// --- Caption styling helpers ---
+const CAP_S = "__CAPSTART__";
+const CAP_E = "__CAPEND__";
+
+// Wrap all non-empty *Caption values with markers so we can style them post-render
+const wrapCaptionMarkers = (data) => {
+  for (const key of Object.keys(data)) {
+    if (
+      key.endsWith("Caption") &&
+      typeof data[key] === "string" &&
+      data[key].trim()
+    ) {
+      data[key] = `${CAP_S}${data[key]}${CAP_E}`;
+    }
+  }
+};
+
+// Post-process rendered document XML: make caption runs bold (paragraphs are already centered in template)
+const styleCaptionsInDoc = (zip) => {
+  const docEntry = zip.files["word/document.xml"];
+  if (!docEntry) return;
+  let xml =
+    typeof docEntry.asText === "function" ? docEntry.asText() : docEntry._data;
+  if (typeof xml !== "string" || !xml.includes(CAP_S)) return;
+
+  // Find each <w:r> that contains caption markers and make it bold
+  xml = xml.replace(
+    /<w:r(\b[^>]*)>([\s\S]*?)<\/w:r>/g,
+    (fullRun, attrs, inner) => {
+      if (!inner.includes(CAP_S)) return fullRun;
+
+      // Strip markers from the text content
+      let newInner = inner
+        .replace(new RegExp(CAP_S.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "g"), "")
+        .replace(new RegExp(CAP_E.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "g"), "");
+
+      // Add bold to existing <w:rPr> or create one
+      if (newInner.includes("<w:rPr>")) {
+        // Insert <w:b/><w:bCs/> right after <w:rPr>
+        newInner = newInner.replace("<w:rPr>", "<w:rPr><w:b/><w:bCs/>");
+      } else if (newInner.includes("</w:rPr>")) {
+        // Has <w:rPr ...> with attributes — insert bold before closing
+        newInner = newInner.replace("</w:rPr>", "<w:b/><w:bCs/></w:rPr>");
+      } else {
+        // No rPr at all — add one
+        newInner = "<w:rPr><w:b/><w:bCs/></w:rPr>" + newInner;
+      }
+
+      return `<w:r${attrs}>${newInner}</w:r>`;
+    }
+  );
+
+  // Clean any stray markers (e.g. in runs the regex didn't match)
+  xml = xml.replace(new RegExp(CAP_S.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "g"), "");
+  xml = xml.replace(new RegExp(CAP_E.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "g"), "");
+
+  zip.file("word/document.xml", xml);
+};
+
+// Convert user-uploaded inline images to anchored images with "Top and Bottom" text wrapping
+// The image module generates wp:docPr with descr="image" (inline) or descr="" (centered).
+// Template logos either have no descr attribute or a long descriptive name.
+const isUserImage = (inlineXml) => {
+  const docPrMatch = inlineXml.match(/<wp:docPr[^>]*>/i);
+  if (!docPrMatch) return false;
+  const docPr = docPrMatch[0];
+  // Image module always includes descr attribute; template logos may omit it
+  if (!docPr.includes('descr=')) return false;
+  // Match the two values the image module produces
+  if (docPr.includes('descr="image"') || docPr.includes('descr=""')) return true;
+  return false;
+};
+
+const convertImagesToTopAndBottom = (zip) => {
+  const docEntry = zip.files["word/document.xml"];
+  if (!docEntry) return;
+  let xml =
+    typeof docEntry.asText === "function" ? docEntry.asText() : docEntry._data;
+  if (typeof xml !== "string" || !xml.includes("wp:inline")) return;
+
+  let heightIdx = 251658240;
+  xml = xml.replace(
+    /<wp:inline([^>]*)>([\s\S]*?)<\/wp:inline>/g,
+    (_match, attrs, inner) => {
+      // Only convert user-uploaded images, leave template logos untouched
+      if (!isUserImage(inner)) return _match;
+
+      heightIdx++;
+      const anchorAttrs =
+        attrs +
+        ` simplePos="0" relativeHeight="${heightIdx}" behindDoc="0"` +
+        ` locked="0" layoutInCell="1" allowOverlap="1"`;
+
+      const positioning =
+        '<wp:simplePos x="0" y="0"/>' +
+        '<wp:positionH relativeFrom="column"><wp:align>center</wp:align></wp:positionH>' +
+        '<wp:positionV relativeFrom="paragraph"><wp:posOffset>0</wp:posOffset></wp:positionV>';
+
+      let newInner = inner;
+      const extentMatch = newInner.match(/<wp:extent\s[^/]*\/>/);
+      if (extentMatch) {
+        newInner = newInner.replace(extentMatch[0], positioning + extentMatch[0]);
+      }
+      const effectMatch = newInner.match(/<wp:effectExtent\s[^/]*\/>/);
+      if (effectMatch) {
+        newInner = newInner.replace(
+          effectMatch[0],
+          effectMatch[0] + "<wp:wrapTopAndBottom/>"
+        );
+      } else if (extentMatch) {
+        newInner = newInner.replace(
+          extentMatch[0],
+          positioning + extentMatch[0] +
+            '<wp:effectExtent l="0" t="0" r="0" b="0"/><wp:wrapTopAndBottom/>'
+        );
+      }
+
+      return `<wp:anchor${anchorAttrs}>${newInner}</wp:anchor>`;
+    }
+  );
+
+  zip.file("word/document.xml", xml);
+};
+
 const getDataURLFromValue = async (value) => {
   if (!value) return undefined;
   if (value instanceof File) {
@@ -316,9 +478,12 @@ export const generateDocumentFromTemplate = async (
         return new Uint8Array(); // no image -> remove tag
       },
       getSize: (imgBytes, tagValue, tagName) => {
-        // First image slot of any group larger, others smaller
         const isFirst = typeof tagName === "string" && /Image1$/.test(tagName);
         const size = isFirst ? LARGE_IMAGE_SIZE : SMALL_IMAGE_SIZE;
+        const natural = getImageNaturalSize(imgBytes);
+        if (natural) {
+          return fitWithinBounds(natural.w, natural.h, size.width, size.height);
+        }
         return [size.width, size.height];
       },
     });
@@ -332,6 +497,8 @@ export const generateDocumentFromTemplate = async (
     try {
       doc.setData(formData);
       doc.render();
+      convertImagesToTopAndBottom(doc.getZip());
+      styleCaptionsInDoc(doc.getZip());
     } catch (renderError) {
       console.error("Docxtemplater render error:", {
         name: renderError?.name,
@@ -642,5 +809,6 @@ export const generateMCLERTSReport = async (formData) => {
     data.dateOfInspection || new Date().toISOString().split("T")[0]
   }.docx`;
 
+  wrapCaptionMarkers(data);
   return await generateDocumentFromTemplate(data, fileName);
 };

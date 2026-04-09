@@ -69,7 +69,7 @@ const FormModal = ({
       <div className="max-h-[90vh] w-full max-w-6xl overflow-y-auto rounded-lg bg-white p-6">
         <div className="mb-6 flex items-center justify-between">
           <h2 className="text-2xl font-bold text-gray-800 dark:text-white">
-            Flow Inspection Form — {editingFormId ? "Edit" : "New Entry"}
+            Electromagnetic Flow Meters — {editingFormId ? "Edit" : "New Entry"}
           </h2>
           <div className="flex gap-2">
             <label className="cursor-pointer rounded-lg border border-gray-300 bg-white px-4 py-2 text-gray-700 hover:bg-gray-50">

@@ -15,15 +15,15 @@ const MonthlyChart = ({ monthlyTrend = [], isLoading }) => {
 
   const chartData = [
     {
-      name: "Form 1",
+      name: "Electromagnetic Flow Meters",
       data: monthlyTrend.map((m) => m.form1),
     },
     {
-      name: "Form 2",
+      name: "V-Notch Weirs",
       data: monthlyTrend.map((m) => m.form2),
     },
     {
-      name: "Form 3",
+      name: "Flumes",
       data: monthlyTrend.map((m) => m.form3),
     },
   ];

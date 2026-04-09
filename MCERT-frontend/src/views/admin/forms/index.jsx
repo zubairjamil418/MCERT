@@ -1280,10 +1280,10 @@ const FormPage = () => {
         <div className="flex items-center justify-between">
           <div>
             <h2 className="text-2xl font-bold text-gray-800 dark:text-white">
-              Forms Management
+              Electromagnetic Flow Meters
             </h2>
             <p className="text-gray-600 dark:text-gray-300">
-              Create and manage your forms
+              Create and manage electromagnetic flow meter forms
             </p>
           </div>
           <Button

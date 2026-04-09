@@ -1277,10 +1277,10 @@ const Form2Page = () => {
         <div className="flex items-center justify-between">
           <div>
             <h2 className="text-2xl font-bold text-gray-800 dark:text-white">
-              Forms Management 2
+              V-Notch Weirs
             </h2>
             <p className="text-gray-600 dark:text-gray-300">
-              Create and manage your forms - Form 2
+              Create and manage V-Notch Weir forms
             </p>
           </div>
           <Button

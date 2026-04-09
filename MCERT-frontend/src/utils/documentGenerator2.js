@@ -182,8 +182,46 @@ const dataURLToBytes = (dataURL) => {
 };
 
 const DEFAULT_IMAGE_SIZE = { width: 530, height: 220 };
-const LARGE_IMAGE_SIZE = { width: 530, height: 220 };
+const LARGE_IMAGE_SIZE = { width: 530, height: 400 };
 const SMALL_IMAGE_SIZE = { width: 230, height: 200 };
+
+// Read natural dimensions from PNG/JPEG bytes
+const getImageNaturalSize = (bytes) => {
+  try {
+    const d = bytes instanceof Uint8Array ? bytes : new Uint8Array(bytes);
+    // PNG: width at offset 16, height at offset 20 (big-endian 4 bytes)
+    if (d[0] === 0x89 && d[1] === 0x50 && d[2] === 0x4e && d[3] === 0x47) {
+      const w = (d[16] << 24) | (d[17] << 16) | (d[18] << 8) | d[19];
+      const h = (d[20] << 24) | (d[21] << 16) | (d[22] << 8) | d[23];
+      if (w > 0 && h > 0) return { w, h };
+    }
+    // JPEG: scan for SOF0/SOF2 marker (0xFF 0xC0 or 0xFF 0xC2)
+    if (d[0] === 0xff && d[1] === 0xd8) {
+      let i = 2;
+      while (i < d.length - 9) {
+        if (d[i] === 0xff) {
+          const marker = d[i + 1];
+          if (marker === 0xc0 || marker === 0xc2) {
+            const h = (d[i + 5] << 8) | d[i + 6];
+            const w = (d[i + 7] << 8) | d[i + 8];
+            if (w > 0 && h > 0) return { w, h };
+          }
+          const len = (d[i + 2] << 8) | d[i + 3];
+          i += 2 + len;
+        } else {
+          i++;
+        }
+      }
+    }
+  } catch (_) { /* fall through */ }
+  return null;
+};
+
+// Scale image to fit within maxW x maxH while preserving aspect ratio
+const fitWithinBounds = (naturalW, naturalH, maxW, maxH) => {
+  const ratio = Math.min(maxW / naturalW, maxH / naturalH, 1);
+  return [Math.round(naturalW * ratio), Math.round(naturalH * ratio)];
+};
 
 // Convert input into dataURL if possible
 const getDataURLFromValue = async (value) => {
@@ -232,6 +270,123 @@ const ensureCaptionPlaceholders = (data, prefix, count = 5) => {
     const key = `${prefix}${i}Caption`;
     if (data[key] === undefined) data[key] = "";
   }
+};
+
+// --- Caption styling helpers ---
+const CAP_S = "__CAPSTART__";
+const CAP_E = "__CAPEND__";
+
+const wrapCaptionMarkers = (data) => {
+  for (const key of Object.keys(data)) {
+    if (
+      key.endsWith("Caption") &&
+      typeof data[key] === "string" &&
+      data[key].trim()
+    ) {
+      data[key] = `${CAP_S}${data[key]}${CAP_E}`;
+    }
+  }
+};
+
+// Post-process rendered document XML: make caption runs bold (paragraphs are already centered in template)
+const styleCaptionsInDoc = (zip) => {
+  const docEntry = zip.files["word/document.xml"];
+  if (!docEntry) return;
+  let xml =
+    typeof docEntry.asText === "function" ? docEntry.asText() : docEntry._data;
+  if (typeof xml !== "string" || !xml.includes(CAP_S)) return;
+
+  // Find each <w:r> that contains caption markers and make it bold
+  xml = xml.replace(
+    /<w:r(\b[^>]*)>([\s\S]*?)<\/w:r>/g,
+    (fullRun, attrs, inner) => {
+      if (!inner.includes(CAP_S)) return fullRun;
+
+      // Strip markers from the text content
+      let newInner = inner
+        .replace(new RegExp(CAP_S.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "g"), "")
+        .replace(new RegExp(CAP_E.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "g"), "");
+
+      // Add bold to existing <w:rPr> or create one
+      if (newInner.includes("<w:rPr>")) {
+        newInner = newInner.replace("<w:rPr>", "<w:rPr><w:b/><w:bCs/>");
+      } else if (newInner.includes("</w:rPr>")) {
+        newInner = newInner.replace("</w:rPr>", "<w:b/><w:bCs/></w:rPr>");
+      } else {
+        newInner = "<w:rPr><w:b/><w:bCs/></w:rPr>" + newInner;
+      }
+
+      return `<w:r${attrs}>${newInner}</w:r>`;
+    }
+  );
+
+  // Clean any stray markers
+  xml = xml.replace(new RegExp(CAP_S.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "g"), "");
+  xml = xml.replace(new RegExp(CAP_E.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "g"), "");
+
+  zip.file("word/document.xml", xml);
+};
+
+// Convert user-uploaded inline images to anchored images with "Top and Bottom" text wrapping
+// The image module generates wp:docPr with descr="image" (inline) or descr="" (centered).
+// Template logos either have no descr attribute or a long descriptive name.
+const isUserImage = (inlineXml) => {
+  const docPrMatch = inlineXml.match(/<wp:docPr[^>]*>/i);
+  if (!docPrMatch) return false;
+  const docPr = docPrMatch[0];
+  if (!docPr.includes('descr=')) return false;
+  if (docPr.includes('descr="image"') || docPr.includes('descr=""')) return true;
+  return false;
+};
+
+const convertImagesToTopAndBottom = (zip) => {
+  const docEntry = zip.files["word/document.xml"];
+  if (!docEntry) return;
+  let xml =
+    typeof docEntry.asText === "function" ? docEntry.asText() : docEntry._data;
+  if (typeof xml !== "string" || !xml.includes("wp:inline")) return;
+
+  let heightIdx = 251658240;
+  xml = xml.replace(
+    /<wp:inline([^>]*)>([\s\S]*?)<\/wp:inline>/g,
+    (_match, attrs, inner) => {
+      if (!isUserImage(inner)) return _match;
+
+      heightIdx++;
+      const anchorAttrs =
+        attrs +
+        ` simplePos="0" relativeHeight="${heightIdx}" behindDoc="0"` +
+        ` locked="0" layoutInCell="1" allowOverlap="1"`;
+
+      const positioning =
+        '<wp:simplePos x="0" y="0"/>' +
+        '<wp:positionH relativeFrom="column"><wp:align>center</wp:align></wp:positionH>' +
+        '<wp:positionV relativeFrom="paragraph"><wp:posOffset>0</wp:posOffset></wp:positionV>';
+
+      let newInner = inner;
+      const extentMatch = newInner.match(/<wp:extent\s[^/]*\/>/);
+      if (extentMatch) {
+        newInner = newInner.replace(extentMatch[0], positioning + extentMatch[0]);
+      }
+      const effectMatch = newInner.match(/<wp:effectExtent\s[^/]*\/>/);
+      if (effectMatch) {
+        newInner = newInner.replace(
+          effectMatch[0],
+          effectMatch[0] + "<wp:wrapTopAndBottom/>"
+        );
+      } else if (extentMatch) {
+        newInner = newInner.replace(
+          extentMatch[0],
+          positioning + extentMatch[0] +
+            '<wp:effectExtent l="0" t="0" r="0" b="0"/><wp:wrapTopAndBottom/>'
+        );
+      }
+
+      return `<wp:anchor${anchorAttrs}>${newInner}</wp:anchor>`;
+    }
+  );
+
+  zip.file("word/document.xml", xml);
 };
 
 // Helper function to format date to dd/mm/yyyy
@@ -339,6 +494,63 @@ const splitSpaceSeparatedValue = (value) => {
   };
 };
 
+// Survey equipment data for the static table
+const SURVEY_EQUIPMENT_ROWS = [
+  ["Engineers level", "335620", "±2.0mm"],
+  ["1000mm Steel rule", "Shinwa (Purple)", "±0.5mm"],
+  ["3m Talmeter tape", "Purple label", "±0.5mm"],
+  ["5m Macallister tape", "Purple label", "±0.5mm"],
+  ["ISOTech IDM (DVM)", "85003701", "±0.008% 1 digit"],
+  ["Ridgid Micro LM-100 (Laser distance meter)", "SZQA0470080416", "±0.5mm"],
+  ["Gas Detector", "", "n/a"],
+  ["PT878", "GAA1518003", "±3.06%"],
+  ["Nivus OCM Pro", "Van A (Purple Label)", "±5.5%"],
+  ["Nivus Wedge", "Van A (Purple Label)", "±5.5%"],
+  ["Calibration plate", "CRP 10.02", "±2mm (Reference only)"],
+  ["Engineers Staff (Red/White)", "Purple label", "±1mm (Reference only)"],
+  ["Steel Callipers", "Purple label", "±1mm (Reference only)"],
+];
+
+const EQUIPMENT_TABLE_MARKER = "___SURVEY_EQUIPMENT_TABLE___";
+
+const buildEquipmentTableXml = () => {
+  const esc = (s) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  const cellXml = (text, { bold = false, color = "000000", fill = "auto", borderRight = true } = {}) => {
+    const shd = fill !== "auto" ? `<w:shd w:val="clear" w:color="auto" w:fill="${fill}"/>` : "";
+    const bTag = bold ? "<w:b/><w:bCs/>" : "";
+    const clr = `<w:color w:val="${color}"/>`;
+    const borders = borderRight
+      ? `<w:tcBorders><w:right w:val="single" w:sz="4" w:space="0" w:color="D6D6D6"/></w:tcBorders>`
+      : "";
+    return `<w:tc><w:tcPr>${borders}${shd}</w:tcPr><w:p><w:pPr><w:jc w:val="center"/></w:pPr><w:r><w:rPr><w:rFonts w:ascii="Calibri" w:hAnsi="Calibri" w:cs="Arial"/><w:sz w:val="20"/><w:szCs w:val="20"/>${bTag}${clr}</w:rPr><w:t xml:space="preserve">${esc(text)}</w:t></w:r></w:p></w:tc>`;
+  };
+
+  const headerRow = `<w:tr><w:trPr><w:trHeight w:val="360"/></w:trPr><w:tc><w:tcPr><w:gridSpan w:val="3"/><w:shd w:val="clear" w:color="auto" w:fill="7B2D8E"/></w:tcPr><w:p><w:pPr><w:jc w:val="center"/></w:pPr><w:r><w:rPr><w:rFonts w:ascii="Calibri" w:hAnsi="Calibri" w:cs="Arial"/><w:sz w:val="22"/><w:szCs w:val="22"/><w:b/><w:bCs/><w:color w:val="FFFFFF"/></w:rPr><w:t>Site survey vehicle SIRIS 4</w:t></w:r></w:p></w:tc></w:tr>`;
+
+  const colHeaderRow = `<w:tr><w:trPr><w:trHeight w:val="300"/></w:trPr>${cellXml("Equipment", { bold: true, color: "FFFFFF", fill: "7B2D8E" })}${cellXml("Serial No", { bold: true, color: "FFFFFF", fill: "7B2D8E" })}${cellXml("Uncertainty", { bold: true, color: "FFFFFF", fill: "7B2D8E", borderRight: false })}</w:tr>`;
+
+  const dataRows = SURVEY_EQUIPMENT_ROWS.map(([eq, serial, unc], i) => {
+    const fill = i % 2 === 0 ? "FFFFFF" : "F2F2F2";
+    return `<w:tr><w:trPr><w:trHeight w:val="280"/></w:trPr>${cellXml(eq, { fill })}${cellXml(serial, { fill })}${cellXml(unc, { fill, borderRight: false })}</w:tr>`;
+  }).join("");
+
+  return `<w:tbl><w:tblPr><w:tblStyle w:val="TableGrid"/><w:tblW w:w="5000" w:type="pct"/><w:tblBorders><w:top w:val="single" w:sz="4" w:space="0" w:color="D6D6D6"/><w:left w:val="single" w:sz="4" w:space="0" w:color="D6D6D6"/><w:bottom w:val="single" w:sz="4" w:space="0" w:color="D6D6D6"/><w:right w:val="single" w:sz="4" w:space="0" w:color="D6D6D6"/><w:insideH w:val="single" w:sz="4" w:space="0" w:color="D6D6D6"/><w:insideV w:val="single" w:sz="4" w:space="0" w:color="D6D6D6"/></w:tblBorders><w:tblLook w:val="04A0" w:firstRow="1" w:lastRow="0" w:firstColumn="1" w:lastColumn="0" w:noHBand="0" w:noVBand="1"/></w:tblPr><w:tblGrid><w:gridCol w:w="3600"/><w:gridCol w:w="3200"/><w:gridCol w:w="2800"/></w:tblGrid>${headerRow}${colHeaderRow}${dataRows}</w:tbl>`;
+};
+
+const injectEquipmentTable = (zip) => {
+  const docXml = zip.files["word/document.xml"];
+  if (!docXml) return;
+  let content = typeof docXml.asText === "function" ? docXml.asText() : docXml._data;
+  if (typeof content !== "string") return;
+
+  if (content.includes(EQUIPMENT_TABLE_MARKER)) {
+    const markerRegex = new RegExp(`<w:p[^>]*>(?:(?!</w:p>).)*${EQUIPMENT_TABLE_MARKER.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}(?:(?!</w:p>).)*</w:p>`, "s");
+    const tableXml = buildEquipmentTableXml();
+    content = content.replace(markerRegex, `${tableXml}<w:p><w:pPr><w:spacing w:after="120"/></w:pPr></w:p>`);
+    zip.file("word/document.xml", content);
+  }
+};
+
 // --- main generator (expects {%aerialViewImage} in the .docx) ---
 export const generateDocumentFromTemplate = async (
   formData,
@@ -359,9 +571,12 @@ export const generateDocumentFromTemplate = async (
         return new Uint8Array(); // no image -> remove tag
       },
       getSize: (imgBytes, tagValue, tagName) => {
-        // First image slot of any group larger, others smaller
         const isFirst = typeof tagName === "string" && /Image1$/.test(tagName);
         const size = isFirst ? LARGE_IMAGE_SIZE : SMALL_IMAGE_SIZE;
+        const natural = getImageNaturalSize(imgBytes);
+        if (natural) {
+          return fitWithinBounds(natural.w, natural.h, size.width, size.height);
+        }
         return [size.width, size.height];
       },
     });
@@ -375,6 +590,9 @@ export const generateDocumentFromTemplate = async (
     try {
       doc.setData(formData);
       doc.render();
+      injectEquipmentTable(doc.getZip());
+      convertImagesToTopAndBottom(doc.getZip());
+      styleCaptionsInDoc(doc.getZip());
     } catch (renderError) {
       console.error("Docxtemplater render error:", {
         name: renderError?.name,
@@ -515,7 +733,7 @@ export const generateMCLERTSReport = async (formData) => {
     siteProcessDescription: formData.siteProcessDescription || "",
     inspectionFlowDescription: formData.inspectionFlowDescription || "",
     flowMeasurementDescription: formData.flowMeasurementDescription || "",
-    surveyEquipmentDescription: formData.surveyEquipmentDescription || "",
+    surveyEquipmentDescription: EQUIPMENT_TABLE_MARKER,
 
     // Maintenance & Calibration 4.0
     routineMaintenanceDescription: formData.routineMaintenanceDescription || "",
@@ -849,5 +1067,6 @@ export const generateMCLERTSReport = async (formData) => {
     data.dateOfInspection || new Date().toISOString().split("T")[0]
   }.docx`;
 
+  wrapCaptionMarkers(data);
   return await generateDocumentFromTemplate(data, fileName);
 };

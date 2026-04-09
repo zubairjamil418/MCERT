@@ -69,7 +69,7 @@ const FormModal3 = ({
       <div className="max-h-[90vh] w-full max-w-6xl overflow-y-auto rounded-lg bg-white p-6">
         <div className="mb-6 flex items-center justify-between">
           <h2 className="text-2xl font-bold text-gray-800 dark:text-white">
-            Flow Inspection Form 3 — {editingFormId ? "Edit" : "New Entry"}
+            Flumes — {editingFormId ? "Edit" : "New Entry"}
           </h2>
           <div className="flex gap-2">
             <label className="cursor-pointer rounded-lg border border-gray-300 bg-white px-4 py-2 text-gray-700 hover:bg-gray-50">
@@ -2055,18 +2055,49 @@ const FormModal3 = ({
               Survey measurement equipment 5.0
             </h2>
             <div className="space-y-3">
-              <div>
-                <label className="mb-1 block text-sm font-medium text-gray-600">
-                  Description
-                </label>
-                <textarea
-                  name="surveyEquipmentDescription"
-                  value={formData.surveyEquipmentDescription}
-                  onChange={handleInputChangeWithBackgroundUpdate}
-                  rows="3"
-                  className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-                  placeholder="The following is a list of equipment taken to each inspection."
-                />
+              <p className="text-sm text-gray-700">
+                The following is a list of equipment taken to each inspection.
+              </p>
+
+              {/* Fixed Equipment Table — Site survey vehicle SIRIS 4 */}
+              <div className="overflow-x-auto rounded-lg border border-purple-300">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="bg-purple-700 text-white">
+                      <th colSpan="3" className="px-3 py-2 text-center font-semibold">
+                        Site survey vehicle SIRIS 4
+                      </th>
+                    </tr>
+                    <tr className="bg-purple-600 text-white">
+                      <th className="border-r border-purple-500 px-3 py-1.5 text-center font-semibold">Equipment</th>
+                      <th className="border-r border-purple-500 px-3 py-1.5 text-center font-semibold">Serial No</th>
+                      <th className="px-3 py-1.5 text-center font-semibold">Uncertainty</th>
+                    </tr>
+                  </thead>
+                  <tbody className="text-gray-700">
+                    {[
+                      ["Engineers level", "335620", "±2.0mm"],
+                      ["1000mm Steel rule", "Shinwa (Purple)", "±0.5mm"],
+                      ["3m Talmeter tape", "Purple label", "±0.5mm"],
+                      ["5m Macallister tape", "Purple label", "±0.5mm"],
+                      ["ISOTech IDM (DVM)", "85003701", "±0.008% 1 digit"],
+                      ["Ridgid Micro LM-100 (Laser distance meter)", "SZQA0470080416", "±0.5mm"],
+                      ["Gas Detector", "", "n/a"],
+                      ["PT878", "GAA1518003", "±3.06%"],
+                      ["Nivus OCM Pro", "Van A (Purple Label)", "±5.5%"],
+                      ["Nivus Wedge", "Van A (Purple Label)", "±5.5%"],
+                      ["Calibration plate", "CRP 10.02", "±2mm (Reference only)"],
+                      ["Engineers Staff (Red/White)", "Purple label", "±1mm (Reference only)"],
+                      ["Steel Callipers", "Purple label", "±1mm (Reference only)"],
+                    ].map(([equipment, serial, uncertainty], i) => (
+                      <tr key={i} className={i % 2 === 0 ? "bg-white" : "bg-gray-50"}>
+                        <td className="border-r border-gray-200 px-3 py-1.5 text-center">{equipment}</td>
+                        <td className="border-r border-gray-200 px-3 py-1.5 text-center">{serial}</td>
+                        <td className="px-3 py-1.5 text-center">{uncertainty}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               </div>
 
               <div>
@@ -2659,7 +2690,7 @@ const FormModal3 = ({
               <div>
                 <label className="mb-1 block text-sm font-medium text-gray-600">
                   Calculated weighted uncertainty{" "}
-                  <span className="text-xs text-gray-500">(From Uncertainty Sheet — F104 &amp; F2)</span>
+                  <span className="text-xs text-gray-500">(From Uncertainty Sheet — F104)</span>
                 </label>
                 <input
                   type="text"

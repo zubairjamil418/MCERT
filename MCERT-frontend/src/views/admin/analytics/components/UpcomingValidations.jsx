@@ -104,7 +104,7 @@ const UpcomingValidations = ({ validations = [], isLoading }) => {
                     </td>
                     <td className="px-3 py-3">
                       <span className="rounded-full bg-blue-100 px-2 py-1 text-xs font-medium text-blue-700 dark:bg-blue-900/30 dark:text-blue-400">
-                        {item.formType}
+                        {({"Form 1": "Electromagnetic Flow Meters", "Form 2": "V-Notch Weirs", "Form 3": "Flumes"})[item.formType] || item.formType}
                       </span>
                     </td>
                     <td className="px-3 py-3">

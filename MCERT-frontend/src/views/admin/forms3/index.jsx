@@ -1302,10 +1302,10 @@ const Form2Page = () => {
         <div className="flex items-center justify-between">
           <div>
             <h2 className="text-2xl font-bold text-gray-800 dark:text-white">
-              Forms Management 3
+              Flumes
             </h2>
             <p className="text-gray-600 dark:text-gray-300">
-              Create and manage your forms - Form 3
+              Create and manage Flume forms
             </p>
           </div>
           <Button

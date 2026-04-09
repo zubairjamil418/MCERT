@@ -93,9 +93,9 @@ const Analytics = () => {
             className="rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-gray-700 focus:border-brand-500 focus:outline-none dark:border-gray-600 dark:bg-navy-700 dark:text-white"
           >
             <option value="all">All Forms</option>
-            <option value="form1">Form 1</option>
-            <option value="form2">Form 2</option>
-            <option value="form3">Form 3</option>
+            <option value="form1">Electromagnetic Flow Meters</option>
+            <option value="form2">V-Notch Weirs</option>
+            <option value="form3">Flumes</option>
           </select>
         </div>
         <div className="flex flex-col">

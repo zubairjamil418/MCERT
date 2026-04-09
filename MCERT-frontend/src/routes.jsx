@@ -79,7 +79,7 @@ const routes = [
     secondary: true,
   },
   {
-    name: "Forms",
+    name: "Electromagnetic Flow Meters",
     layout: "/admin",
     path: "forms",
     icon: <MdCalendarMonth className="h-6 w-6" />,
@@ -87,7 +87,7 @@ const routes = [
     secondary: true,
   },
   {
-    name: "Forms 2",
+    name: "V-Notch Weirs",
     layout: "/admin",
     path: "forms2",
     icon: <MdCalendarMonth className="h-6 w-6" />,
@@ -95,7 +95,7 @@ const routes = [
     secondary: true,
   },
   {
-    name: "Forms 3",
+    name: "Flumes",
     layout: "/admin",
     path: "forms3",
     icon: <MdCalendarMonth className="h-6 w-6" />,

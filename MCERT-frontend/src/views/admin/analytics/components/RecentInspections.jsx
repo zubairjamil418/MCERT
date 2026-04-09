@@ -11,6 +11,12 @@ const RecentInspections = ({ inspections = [], isLoading, pagination, onPageChan
     "Form 3": "/admin/forms3",
   };
 
+  const formTypeDisplayName = {
+    "Form 1": "Electromagnetic Flow Meters",
+    "Form 2": "V-Notch Weirs",
+    "Form 3": "Flumes",
+  };
+
   const formTypeBadge = {
     "Form 1": "bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-400",
     "Form 2": "bg-cyan-100 text-cyan-700 dark:bg-cyan-900/30 dark:text-cyan-400",
@@ -111,7 +117,7 @@ const RecentInspections = ({ inspections = [], isLoading, pagination, onPageChan
                         formTypeBadge[item.formType] || formTypeBadge["Form 1"]
                       }`}
                     >
-                      {item.formType}
+                      {formTypeDisplayName[item.formType] || item.formType}
                     </span>
                   </td>
                   <td className="px-4 py-3">
