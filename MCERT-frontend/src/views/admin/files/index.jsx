@@ -207,7 +207,7 @@ const Files = () => {
                       {file.name}
                     </h4>
                     <p className="text-sm text-gray-500 dark:text-gray-400">
-                      {file.size} â€¢ Uploaded on {file.uploadDate}
+                      {file.size} • Uploaded on {file.uploadDate}
                     </p>
                   </div>
                 </div>

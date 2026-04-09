@@ -885,10 +885,23 @@ export async function extractUncertaintySheetData(file) {
       }
     }
 
-    const f104RawValue =
+    const f104Cell =
       uncertaintyData.columnData["F"] && uncertaintyData.columnData["F"][104]
-        ? uncertaintyData.columnData["F"][104].rawValue
+        ? uncertaintyData.columnData["F"][104]
         : null;
+
+    // For F104, prefer the raw numeric value (cell.v) over the formatted display value (cell.w)
+    // cell.w may contain unwanted formatting like padding, percentage signs, etc.
+    let f104RawValue = null;
+    if (f104Cell) {
+      if (typeof f104Cell.value === "number" && !isNaN(f104Cell.value)) {
+        f104RawValue = f104Cell.value;
+      } else if (f104Cell.rawValue !== null && f104Cell.rawValue !== undefined) {
+        f104RawValue = f104Cell.rawValue;
+      } else {
+        f104RawValue = f104Cell.value;
+      }
+    }
 
     uncertaintyData.f104RawValue = f104RawValue;
 

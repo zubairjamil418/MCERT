@@ -392,7 +392,7 @@ const FormModal2 = ({
                   value={formData.uncertainty}
                   onChange={handleInputChangeWithBackgroundUpdate}
                   className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
-                  placeholder="e.g., Â±3.03% (from Uncertainty Sheet F104)"
+                  placeholder="e.g.,  ±3.03% (from Uncertainty Sheet F104)"
                 />
               </div>
             </div>
@@ -648,7 +648,7 @@ const FormModal2 = ({
                     value={formData.dryW}
                     onChange={handleInputChangeWithBackgroundUpdate}
                     className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
-                    placeholder="e.g., 211 mÂ³/day (from Excel H6)"
+                    placeholder="e.g., 211 m ³/day (from Excel H6)"
                   />
                 </div>
                 <div>
@@ -664,7 +664,7 @@ const FormModal2 = ({
                     value={formData.maxD}
                     onChange={handleInputChangeWithBackgroundUpdate}
                     className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
-                    placeholder="e.g., 211 mÂ³/day (from Excel D6)"
+                    placeholder="e.g., 211 m ³/day (from Excel D6)"
                   />
                 </div>
                 <div>
@@ -1473,7 +1473,7 @@ const FormModal2 = ({
                       value={formData.verificationCalibrationReference}
                       onChange={handleInputChangeWithBackgroundUpdate}
                       className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
-                      placeholder="e.g., Blue Collar 212mm (Â±1mm)"
+                      placeholder="e.g., Blue Collar 212mm ( ±1mm)"
                     />
                   </div>
                   <div>
@@ -1958,7 +1958,7 @@ const FormModal2 = ({
                 The following is a list of equipment taken to each inspection.
               </p>
 
-              {/* Fixed Equipment Table â€” Site survey vehicle SIRIS 4 */}
+              {/* Fixed Equipment Table - Site survey vehicle SIRIS 4 */}
               <div className="overflow-x-auto rounded-lg border border-purple-300">
                 <table className="w-full text-sm">
                   <thead>
@@ -1975,19 +1975,19 @@ const FormModal2 = ({
                   </thead>
                   <tbody className="text-gray-700">
                     {[
-                      ["Engineers level", "335620", "Â±2.0mm"],
-                      ["1000mm Steel rule", "Shinwa (Purple)", "Â±0.5mm"],
-                      ["3m Talmeter tape", "Purple label", "Â±0.5mm"],
-                      ["5m Macallister tape", "Purple label", "Â±0.5mm"],
-                      ["ISOTech IDM (DVM)", "85003701", "Â±0.008% 1 digit"],
-                      ["Ridgid Micro LM-100 (Laser distance meter)", "SZQA0470080416", "Â±0.5mm"],
+                      ["Engineers level", "335620", " ±2.0mm"],
+                      ["1000mm Steel rule", "Shinwa (Purple)", " ±0.5mm"],
+                      ["3m Talmeter tape", "Purple label", " ±0.5mm"],
+                      ["5m Macallister tape", "Purple label", " ±0.5mm"],
+                      ["ISOTech IDM (DVM)", "85003701", " ±0.008% 1 digit"],
+                      ["Ridgid Micro LM-100 (Laser distance meter)", "SZQA0470080416", " ±0.5mm"],
                       ["Gas Detector", "", "n/a"],
-                      ["PT878", "GAA1518003", "Â±3.06%"],
-                      ["Nivus OCM Pro", "Van A (Purple Label)", "Â±5.5%"],
-                      ["Nivus Wedge", "Van A (Purple Label)", "Â±5.5%"],
-                      ["Calibration plate", "CRP 10.02", "Â±2mm (Reference only)"],
-                      ["Engineers Staff (Red/White)", "Purple label", "Â±1mm (Reference only)"],
-                      ["Steel Callipers", "Purple label", "Â±1mm (Reference only)"],
+                      ["PT878", "GAA1518003", " ±3.06%"],
+                      ["Nivus OCM Pro", "Van A (Purple Label)", " ±5.5%"],
+                      ["Nivus Wedge", "Van A (Purple Label)", " ±5.5%"],
+                      ["Calibration plate", "CRP 10.02", " ±2mm (Reference only)"],
+                      ["Engineers Staff (Red/White)", "Purple label", " ±1mm (Reference only)"],
+                      ["Steel Callipers", "Purple label", " ±1mm (Reference only)"],
                     ].map(([equipment, serial, uncertainty], i) => (
                       <tr key={i} className={i % 2 === 0 ? "bg-white" : "bg-gray-50"}>
                         <td className="border-r border-gray-200 px-3 py-1.5 text-center">{equipment}</td>
@@ -2575,7 +2575,7 @@ const FormModal2 = ({
                   value={formData.conclusionUncertaintySheetF104}
                   onChange={handleInputChangeWithBackgroundUpdate}
                   className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
-                  placeholder="e.g., Â±3.03%"
+                  placeholder="e.g.,  ±3.03%"
                 />
               </div>
             </div>

@@ -1174,15 +1174,28 @@ const Form2Page = () => {
         uncertaintyData.f104RawValue !== null &&
         uncertaintyData.f104RawValue !== undefined
       ) {
-        const uncertaintyValue = String(uncertaintyData.f104RawValue);
+        let uncertaintyValue = String(uncertaintyData.f104RawValue);
+
+        // Format: if it's a plain number, add ± and %
+        if (uncertaintyValue && !isNaN(parseFloat(uncertaintyValue))) {
+          const numValue = parseFloat(uncertaintyValue);
+          if (!uncertaintyValue.includes("±") && !uncertaintyValue.includes("%")) {
+            uncertaintyValue = `± ${numValue.toFixed(2)} %`;
+          } else if (!uncertaintyValue.includes("±")) {
+            uncertaintyValue = `± ${uncertaintyValue}`;
+          } else if (!uncertaintyValue.includes("%")) {
+            uncertaintyValue = `${uncertaintyValue} %`;
+          }
+        }
+
         mappedData.uncertainty = uncertaintyValue;
-        mappedData.conclusionUnCert = uncertaintyValue; // Set the same value for conclusion
+        mappedData.conclusionUnCert = uncertaintyValue;
+        mappedData.conclusionUncertaintySheetF104 = uncertaintyValue;
         console.log(`=== OVERRIDING UNCERTAINTY VALUE ===`);
         console.log(`Using F104 rawValue: "${uncertaintyData.f104RawValue}"`);
+        console.log(`Formatted uncertainty: "${uncertaintyValue}"`);
         console.log(`Mapped uncertainty: "${mappedData.uncertainty}"`);
-        console.log(
-          `Mapped conclusionUnCert: "${mappedData.conclusionUnCert}"`
-        );
+        console.log(`Mapped conclusionUncertaintySheetF104: "${mappedData.conclusionUncertaintySheetF104}"`);
         console.log(`=== END UNCERTAINTY OVERRIDE ===`);
       }
 
