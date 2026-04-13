@@ -13,6 +13,7 @@ const Forms = lazy(() => import("views/admin/forms"));
 const Forms2 = lazy(() => import("views/admin/forms2"));
 const Forms3 = lazy(() => import("views/admin/forms3"));
 const Analytics = lazy(() => import("views/admin/analytics"));
+const UserManagement = lazy(() => import("views/admin/users"));
 
 // Auth Imports (lazy loaded)
 const SignIn = lazy(() => import("views/auth/SignIn"));
@@ -28,6 +29,7 @@ import {
   MdAttachFile,
   MdCalendarMonth,
   MdInsights,
+  MdPeople,
 } from "react-icons/md";
 
 const routes = [
@@ -124,6 +126,14 @@ const routes = [
     path: "settings",
     icon: <MdSettings className="h-6 w-6" />,
     component: <Settings />,
+    secondary: true,
+  },
+  {
+    name: "User Management",
+    layout: "/admin",
+    path: "users",
+    icon: <MdPeople className="h-6 w-6" />,
+    component: <UserManagement />,
     secondary: true,
   },
   {

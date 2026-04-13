@@ -71,6 +71,10 @@ export class AuthService {
         throw new UnauthorizedException('User does not exist');
       }
 
+      if (!user.isActive) {
+        throw new UnauthorizedException('Your account has been disabled. Please contact an administrator.');
+      }
+
       const isEqual = await this.hashingService.compare(
         signInDto.password,
         user.password,
@@ -98,6 +102,7 @@ export class AuthService {
           name: user.name,
           email: user.email,
           role: user.role,
+          isActive: user.isActive,
         },
         access_token: token,
         token_type: 'Bearer',
@@ -120,6 +125,7 @@ export class AuthService {
           name: user.name,
           email: user.email,
           role: user.role,
+          isActive: user.isActive,
         },
       };
     } catch (error) {

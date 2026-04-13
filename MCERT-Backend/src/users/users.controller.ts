@@ -6,18 +6,18 @@ import {
   Patch,
   Param,
   Delete,
+  UseGuards,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { ActiveUser } from 'src/iam/decorators/active-user.decorator';
-import { ActiveUserData } from 'src/iam/interfaces/active-user.data.interface';
 import { Roles } from 'src/iam/decorators/roles.decorator';
 import { Role } from './enums/role.enum';
-// import { Auth } from 'src/iam/decorators/auth.decorator';
-// import { AuthType } from 'src/iam/enums/auth-type.enum';
+import { AuthGuard } from 'src/iam/guards/auth/auth.guard';
+import { RoleGuard } from 'src/iam/guards/role/role.guard';
 
-// @Auth(AuthType.Bearer)
+@UseGuards(AuthGuard, RoleGuard)
+@Roles(Role.Admin)
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
@@ -27,26 +27,28 @@ export class UsersController {
     return this.usersService.create(createUserDto);
   }
 
-  @Roles(Role.Admin)
   @Get()
-  findAll(@ActiveUser() user: ActiveUserData) {
-    console.log('ActiveUser:', user);
+  findAll() {
     return this.usersService.findAll();
   }
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.usersService.findOne(+id);
+    return this.usersService.findOne(id);
   }
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.usersService.update(+id, updateUserDto);
+    return this.usersService.update(id, updateUserDto);
   }
 
-  @Roles(Role.Admin)
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.usersService.remove(+id);
+    return this.usersService.remove(id);
+  }
+
+  @Patch(':id/toggle-active')
+  toggleActive(@Param('id') id: string) {
+    return this.usersService.toggleActive(id);
   }
 }

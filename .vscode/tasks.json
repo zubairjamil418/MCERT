@@ -1,0 +1,67 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Delete fix-chars.js",
+			"type": "shell",
+			"command": "del \"c:\\Users\\Business_Dev\\Downloads\\MCERT\\fix-chars.js\""
+		},
+		{
+			"label": "Start Backend",
+			"type": "shell",
+			"command": "cd MCERT-Backend && pnpm start:dev",
+			"isBackground": true,
+			"problemMatcher": [
+				"$tsc"
+			]
+		},
+		{
+			"label": "Start Frontend",
+			"type": "shell",
+			"command": "cd MCERT-frontend && pnpm dev",
+			"isBackground": true,
+			"problemMatcher": []
+		},
+		{
+			"label": "Backend :3005",
+			"type": "shell",
+			"command": "cd MCERT-Backend && pnpm start:dev",
+			"presentation": {
+				"reveal": "always",
+				"panel": "new",
+				"focus": false
+			},
+			"problemMatcher": []
+		},
+		{
+			"label": "Frontend :3000",
+			"type": "shell",
+			"command": "cd MCERT-frontend && pnpm dev",
+			"presentation": {
+				"reveal": "always",
+				"panel": "new",
+				"focus": true
+			},
+			"problemMatcher": []
+		},
+		{
+			"label": "MCERT Backend",
+			"type": "shell",
+			"command": "cd MCERT-Backend && pnpm run start:dev",
+			"isBackground": true,
+			"problemMatcher": []
+		},
+		{
+			"label": "MCERT-Backend",
+			"type": "shell",
+			"command": "cd MCERT-Backend && pnpm run start:dev",
+			"isBackground": true
+		},
+		{
+			"label": "MCERT-Frontend",
+			"type": "shell",
+			"command": "cd MCERT-frontend && pnpm run dev",
+			"isBackground": true
+		}
+	]
+}
