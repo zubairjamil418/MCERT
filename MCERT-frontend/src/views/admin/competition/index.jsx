@@ -84,9 +84,9 @@ const Competition = () => {
   };
 
   const getRankIcon = (rank) => {
-    if (rank === 1) return "ðŸ¥‡";
-    if (rank === 2) return "ðŸ¥ˆ";
-    if (rank === 3) return "ðŸ¥‰";
+    if (rank === 1) return "1st";
+    if (rank === 2) return "2nd";
+    if (rank === 3) return "3rd";
     return rank;
   };
 

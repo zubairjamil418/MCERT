@@ -215,13 +215,10 @@ const FormModal3 = ({
                   type="text"
                   name="reportPreparedBy"
                   value={formData.reportPreparedBy}
-                  readOnly
-                  className="w-full rounded-lg border border-gray-300 bg-gray-100 text-gray-500 px-3 py-2 outline-none"
+                  onChange={handleInputChangeWithBackgroundUpdate}
+                  className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
                   placeholder="Siris Flow Inspections Ltd"
                 />
-                <div className="mt-1 text-xs text-gray-500">
-                  Fixed value
-                </div>
               </div>
               <div>
                 <div className="mb-2 flex items-center justify-between">
@@ -376,13 +373,10 @@ const FormModal3 = ({
                 <textarea
                   name="statementOfCompliance"
                   value={formData.statementOfCompliance}
-                  readOnly
-                  className="w-full rounded-lg border border-gray-300 bg-gray-100 text-gray-500 px-3 py-2 outline-none"
+                  onChange={handleInputChangeWithBackgroundUpdate}
+                  className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
                   rows={4}
                 />
-                <div className="mt-1 text-xs text-gray-500">
-                  Fixed value
-                </div>
               </div>
               <div>
                 <label className="mb-1 block text-sm font-medium text-gray-600">
@@ -1162,8 +1156,7 @@ const FormModal3 = ({
                       name="visibleScumMark"
                       value={formData.visibleScumMark || ""}
                       onChange={handleInputChangeWithBackgroundUpdate}
-                      readOnly
-                      className="w-full rounded-lg border border-gray-200 bg-gray-100 px-3 py-2 text-gray-500 focus:outline-none"
+                      className="w-full rounded-lg border border-gray-200 px-3 py-2 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
                       placeholder="Auto-filled from Excel cell C69"
                     />
                   </div>
@@ -1626,8 +1619,8 @@ const FormModal3 = ({
                       type="text"
                       name="verificationCalibrationReference"
                       value={formData.verificationCalibrationReference}
-                      readOnly
-                      className="w-full rounded-lg border border-gray-200 bg-gray-100 px-3 py-2 text-gray-600"
+                      onChange={handleInputChangeWithBackgroundUpdate}
+                      className="w-full rounded-lg border border-gray-200 px-3 py-2 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
                     />
                   </div>
                 </div>
@@ -1931,8 +1924,8 @@ const FormModal3 = ({
                           })()
                         : ""
                     }
-                    readOnly
-                    className="w-full rounded-lg border border-gray-300 bg-gray-100 text-gray-500 px-3 py-2 outline-none"
+                    onChange={handleInputChangeWithBackgroundUpdate}
+                    className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
                   />
                   <div className="mt-1 text-xs text-gray-500">
                     Auto-calculated from Date of Inspection + 1 year
@@ -2680,8 +2673,8 @@ const FormModal3 = ({
                   type="text"
                   name="conclusionUncertaintySheetF2"
                   value={formData.conclusionUncertaintySheetF2}
-                  readOnly
-                  className="w-full rounded-lg border border-gray-300 bg-gray-100 text-gray-500 px-3 py-2 outline-none"
+                  onChange={handleInputChangeWithBackgroundUpdate}
+                  className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
                   placeholder="Auto-filled from Uncertainty Sheet F2"
                 />
               </div>

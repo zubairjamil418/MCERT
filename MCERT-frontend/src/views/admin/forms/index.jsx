@@ -1301,7 +1301,7 @@ const FormPage = () => {
             </svg>
             <span>{successMessage}</span>
           </div>
-          <button onClick={() => setSuccessMessage('')} className="ml-4 text-green-600 hover:text-green-800 dark:hover:text-green-200">âœ•</button>
+          <button onClick={() => setSuccessMessage('')} className="ml-4 text-green-600 hover:text-green-800 dark:hover:text-green-200">X</button>
         </div>
       )}
 
