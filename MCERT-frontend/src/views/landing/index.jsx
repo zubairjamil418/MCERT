@@ -13,10 +13,6 @@ const Landing = () => {
       }}
     >
       <Header />
-      <iframe
-        src="https://werlabs.user.com/landing/4u8dqt/"
-        frameborder="1"
-      ></iframe>
       <div
         className="flex min-h-screen w-full flex-col items-center pt-8"
         style={{ marginTop: "100px" }}
