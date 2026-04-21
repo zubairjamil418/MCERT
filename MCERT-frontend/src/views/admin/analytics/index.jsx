@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useMemo } from "react";
 import { useAuth } from "contexts/AuthContext";
 import StatCards from "./components/StatCards";
 import UpcomingValidations from "./components/UpcomingValidations";
@@ -16,16 +16,19 @@ const Analytics = () => {
   const [endDate, setEndDate] = useState("");
 
   // Recent inspections pagination
-  const [recentData, setRecentData] = useState(null);
+  const [allRecentForms, setAllRecentForms] = useState([]);
   const [recentPage, setRecentPage] = useState(1);
   const [isLoadingRecent, setIsLoadingRecent] = useState(false);
   const recentLimit = 10;
 
-  const userId = user?.id || localStorage.getItem("userResposne");
+  const isAdmin = user?.role === "admin";
+  const userId = isAdmin ? null : (user?.id || localStorage.getItem("userResposne"));
 
   const fetchStats = useCallback(async () => {
     try {
       setIsLoading(true);
+      setIsLoadingRecent(true);
+
       const params = new URLSearchParams();
       if (userId) params.append("userId", userId);
       if (formType && formType !== "all") params.append("formType", formType);
@@ -35,41 +38,137 @@ const Analytics = () => {
       const url = `${import.meta.env.VITE_BACKEND_URL}dashboard/stats?${params.toString()}`;
       const response = await authFetch(url);
       const result = await response.json();
+
+      // Frontend manual override to bypass the backend bugs and map by dateOfInspection
+      try {
+        let draftCount = 0;
+        let completedCount = 0;
+        const trendMap = {}; 
+        
+        const cDate = new Date();
+        for (let i = 11; i >= 0; i--) {
+          const d = new Date(cDate.getFullYear(), cDate.getMonth() - i, 1);
+          const m = d.getMonth() + 1;
+          const y = d.getFullYear();
+          const monthKey = `${y}-${m < 10 ? "0" + m : m}`;
+          trendMap[monthKey] = { month: monthKey, form1: 0, form2: 0, form3: 0, total: 0 };
+        }
+
+        const validations = [];
+        const recentForms = [];
+
+        const countStatuses = async (endpoint, typeKey, typeLabel) => {
+          const res = await authFetch(`${import.meta.env.VITE_BACKEND_URL}${endpoint}`);
+          if (!res.ok) return;
+          const items = await res.json();
+          items.forEach((f) => {
+            const fUserId = typeof f.userId === "object" ? f.userId?._id : f.userId;
+            if (userId && fUserId !== userId) return;
+            
+            const targetDateStr = f.formData?.dateOfInspection || f.createdAt;
+            const targetDate = new Date(targetDateStr);
+            if (isNaN(targetDate)) return;
+
+            if (startDate && targetDate < new Date(startDate)) return;
+            if (endDate && targetDate > new Date(endDate)) return;
+
+            const s = (f.status || "").toLowerCase();
+            if (s === "draft") {
+              draftCount++;
+            } else if (s === "completed" || s === "reviewed" || s === "submitted" || s === "pending") {
+              completedCount++;
+            }
+
+            const m = targetDate.getMonth() + 1;
+            const y = targetDate.getFullYear();
+            const monthKey = `${y}-${m < 10 ? "0" + m : m}`;
+            
+            if (trendMap[monthKey]) {
+              trendMap[monthKey][typeKey]++;
+              trendMap[monthKey].total++;
+            }
+
+            const validationDue = new Date(targetDate);
+            validationDue.setFullYear(validationDue.getFullYear() + 1);
+            const now = new Date();
+            const diffTime = validationDue.getTime() - now.getTime();
+            const daysUntil = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+            if (daysUntil <= 90 && s !== "draft") {
+              let urgency = "upcoming";
+              if (daysUntil < 0) urgency = "overdue";
+              else if (daysUntil < 30) urgency = "urgent";
+
+              validations.push({
+                formId: f._id,
+                formType: typeLabel,
+                siteName: f.formData?.siteName || "Unknown Site",
+                lastInspection: targetDate.toISOString().split("T")[0],
+                validationDue: validationDue.toISOString(),
+                daysUntil,
+                urgency,
+                status: f.status
+              });
+            }
+
+            let inspectorName = "Not specified";
+            if (f.formData && f.formData.inspector && f.formData.inspector.trim() && f.formData.inspector.trim().toLowerCase() !== "muhammad shuraim khan") {
+              inspectorName = f.formData.inspector;
+            } else if (f.userId && typeof f.userId === "object") {
+              const fullName = [f.userId.firstName, f.userId.lastName].filter(Boolean).join(" ") || f.userId.name || "";
+              if (fullName.trim() && fullName.trim().toLowerCase() !== "muhammad shuraim khan") {
+                inspectorName = fullName;
+              }
+            } else if (f.inspectorName && f.inspectorName.trim().toLowerCase() !== "muhammad shuraim khan") {
+              inspectorName = f.inspectorName;
+            } // else remains "Not specified"
+
+            recentForms.push({
+              _id: f._id,
+              siteName: f.formData?.siteName || "Unknown Site",
+              formType: typeLabel,
+              inspector: inspectorName,
+              status: f.status || "pending",
+              dateOfInspection: targetDateStr,
+              createdAt: f.createdAt,
+            });
+          });
+        };
+
+        const promises = [];
+        if (formType === "all" || formType === "form1") promises.push(countStatuses("forms", "form1", "Form 1"));
+        if (formType === "all" || formType === "form2") promises.push(countStatuses("second-forms", "form2", "Form 2"));
+        if (formType === "all" || formType === "form3") promises.push(countStatuses("third-forms", "form3", "Form 3"));
+        
+        await Promise.all(promises);
+        result.draft = draftCount;
+        result.completed = completedCount;
+        
+        result.monthlyTrend = Object.values(trendMap).sort((a, b) => a.month.localeCompare(b.month));
+        result.upcomingValidations = validations.sort((a, b) => a.daysUntil - b.daysUntil).slice(0, 6);
+        
+        recentForms.sort((a, b) => new Date(b.dateOfInspection).getTime() - new Date(a.dateOfInspection).getTime());
+        setAllRecentForms(recentForms);
+      } catch (e) {
+        console.error("Failed to correct analytics stats on frontend:", e);
+      }
+
       setData(result);
     } catch (err) {
       console.error("Failed to fetch dashboard stats:", err);
     } finally {
       setIsLoading(false);
+      setIsLoadingRecent(false);
     }
   }, [authFetch, userId, formType, startDate, endDate]);
 
-  const fetchRecentInspections = useCallback(async (page = 1) => {
-    try {
-      setIsLoadingRecent(true);
-      const params = new URLSearchParams();
-      if (userId) params.append("userId", userId);
-      if (formType && formType !== "all") params.append("formType", formType);
-      if (startDate) params.append("startDate", startDate);
-      if (endDate) params.append("endDate", endDate);
-      params.append("page", String(page));
-      params.append("limit", String(recentLimit));
-
-      const url = `${import.meta.env.VITE_BACKEND_URL}dashboard/recent-inspections?${params.toString()}`;
-      const response = await authFetch(url);
-      const result = await response.json();
-      setRecentData(result);
-      setRecentPage(page);
-    } catch (err) {
-      console.error("Failed to fetch recent inspections:", err);
-    } finally {
-      setIsLoadingRecent(false);
-    }
-  }, [authFetch, userId, formType, startDate, endDate, recentLimit]);
+  const fetchRecentInspections = useCallback((page = 1) => {
+    setRecentPage(page);
+  }, []);
 
   useEffect(() => {
     fetchStats();
-    fetchRecentInspections(1);
-  }, [fetchStats, fetchRecentInspections]);
+  }, [fetchStats]);
 
   const handleClearFilters = () => {
     setFormType("all");
@@ -78,6 +177,14 @@ const Analytics = () => {
   };
 
   const hasActiveFilters = formType !== "all" || startDate || endDate;
+
+  // Manual pagination
+  const paginatedForms = useMemo(() => {
+    const startIndex = (recentPage - 1) * recentLimit;
+    return allRecentForms.slice(startIndex, startIndex + recentLimit);
+  }, [allRecentForms, recentPage, recentLimit]);
+
+  const totalPages = Math.ceil(allRecentForms.length / recentLimit) || 1;
 
   return (
     <div className="mt-3 flex flex-col gap-5">
@@ -154,9 +261,14 @@ const Analytics = () => {
 
       {/* Row 3 — Recent Inspections with Pagination */}
       <RecentInspections
-        inspections={recentData?.data || []}
+        inspections={paginatedForms}
         isLoading={isLoadingRecent}
-        pagination={recentData?.pagination}
+        pagination={{
+          page: recentPage,
+          limit: recentLimit,
+          total: allRecentForms.length,
+          pages: totalPages
+        }}
         onPageChange={(page) => fetchRecentInspections(page)}
       />
     </div>
