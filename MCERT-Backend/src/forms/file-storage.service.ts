@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { promises as fs } from 'fs';
-import { join } from 'path';
+import { basename, join } from 'path';
 import * as zlib from 'zlib';
 import { promisify } from 'util';
 
@@ -93,24 +93,39 @@ export class FileStorageService {
    */
   async retrieveFormData(filePath: string, compressed: boolean = true): Promise<any> {
     try {
-      // Check if file exists
-      await fs.access(filePath);
-      
-      // Read file
-      const fileBuffer = await fs.readFile(filePath);
-      
-      // Decompress if needed
-      let dataBuffer: Buffer;
-      if (compressed) {
-        dataBuffer = await gunzip(fileBuffer);
-      } else {
-        dataBuffer = fileBuffer;
+      // Resolve stale absolute paths by trying local storage with the same filename.
+      let resolvedPath = filePath;
+      try {
+        await fs.access(resolvedPath);
+      } catch {
+        const fallbackPath = join(this.storageDir, basename(filePath));
+        await fs.access(fallbackPath);
+        resolvedPath = fallbackPath;
+        console.warn(`Primary form path missing, using fallback path: ${fallbackPath}`);
       }
 
-      // Parse JSON
-      const data = JSON.parse(dataBuffer.toString());
-      
-      console.log(`Form data retrieved: ${filePath} (${(fileBuffer.length / 1024 / 1024).toFixed(2)}MB)`);
+      // Read file
+      const fileBuffer = await fs.readFile(resolvedPath);
+
+      // Parse JSON with compression auto-fallback for legacy/inconsistent metadata.
+      let data: any;
+      if (compressed) {
+        try {
+          const dataBuffer = await gunzip(fileBuffer);
+          data = JSON.parse(dataBuffer.toString());
+        } catch {
+          data = JSON.parse(fileBuffer.toString());
+        }
+      } else {
+        try {
+          data = JSON.parse(fileBuffer.toString());
+        } catch {
+          const dataBuffer = await gunzip(fileBuffer);
+          data = JSON.parse(dataBuffer.toString());
+        }
+      }
+
+      console.log(`Form data retrieved: ${resolvedPath} (${(fileBuffer.length / 1024 / 1024).toFixed(2)}MB)`);
       
       return data;
     } catch (error) {

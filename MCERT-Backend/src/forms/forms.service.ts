@@ -93,7 +93,7 @@ export class FormsService {
       );
 
       formDocument.filePath = fileResult.filePath;
-      formDocument.fileName = fileResult.filePath.split('/').pop();
+      formDocument.fileName = fileResult.filePath.split(/[/\\]/).pop();
       formDocument.isCompressed = fileResult.compressed;
       formDocument.fileSize = fileResult.fileSize;
       formDocument.storageMethod = 'file';
@@ -276,7 +276,7 @@ export class FormsService {
       {
         $set: {
           filePath: fileResult.filePath,
-          fileName: fileResult.filePath.split('/').pop(),
+          fileName: fileResult.filePath.split(/[/\\]/).pop(),
           isCompressed: fileResult.compressed,
           fileSize: fileResult.fileSize,
           storageMethod: 'file',

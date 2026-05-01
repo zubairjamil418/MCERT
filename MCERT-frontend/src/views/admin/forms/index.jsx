@@ -154,7 +154,31 @@ const convertBase64ToFiles = (formData) => {
   return processedFormData;
 };
 
+// Normalize variable backend response wrappers to the actual form payload.
+const extractFormDataPayload = (payload) => {
+  if (!payload || typeof payload !== "object") return payload;
+
+  if (
+    payload.formData &&
+    typeof payload.formData === "object" &&
+    !Array.isArray(payload.formData)
+  ) {
+    return payload.formData;
+  }
+
+  if (payload.data) {
+    return extractFormDataPayload(payload.data);
+  }
+
+  return payload;
+};
+
 const FormPage = () => {
+  const getAuthToken = () =>
+    localStorage.getItem("token") || localStorage.getItem("authToken");
+
+  const getUserId = () => localStorage.getItem("userResposne");
+
   // State for forms data
   const [forms, setForms] = useState([]);
   const [isLoadingForms, setIsLoadingForms] = useState(true);
@@ -278,7 +302,7 @@ const FormPage = () => {
 
     try {
       setIsBackgroundUpdating(true);
-      const token = localStorage.getItem("userResposne");
+      const token = getAuthToken();
 
       // Convert images to base64 before sending
       const processedFormData = await convertImagesToBase64(formDataToUpdate);
@@ -322,7 +346,7 @@ const FormPage = () => {
         setError(null);
 
         // Get token from localStorage or context if you have authentication
-        const token = localStorage.getItem("authToken");
+        const token = getAuthToken();
         const result = await formsService.getAllForms(
           token,
           page,
@@ -442,11 +466,12 @@ const FormPage = () => {
       setHasUnsavedChanges(false);
 
       // Create a new form immediately
-      const token = localStorage.getItem("userResposne");
+      const token = getAuthToken();
+      const userId = getUserId();
       const payload = {
         formData: defaultData,
         status: "Draft",
-        userId: token,
+        userId,
       };
 
       const result = await formsService.createForm(payload, token);
@@ -475,13 +500,13 @@ const FormPage = () => {
     try {
       setIsLoadingFormById(true);
 
-      const token = localStorage.getItem("token") || localStorage.getItem("userResposne");
+      const token = getAuthToken();
       // Use getFormWithData to fetch actual form data from file storage
       const result = await formsService.getFormWithData(id, token);
 
       if (result.success && result.data) {
         // formData is the actual stored form data (from file storage)
-        const responseData = result.data.formData || result.data.data || result.data;
+        const responseData = extractFormDataPayload(result.data);
         const mappedFormData = mapFormDataFromAPI(responseData);
         setFormData(mappedFormData);
         setOriginalFormData(mappedFormData); // Track original data for unsaved changes
@@ -895,7 +920,8 @@ const FormPage = () => {
     setIsCreatingForm(true);
 
     try {
-      const token = localStorage.getItem("userResposne");
+      const token = getAuthToken();
+      const userId = getUserId();
       let result;
 
       // Convert images to base64 before sending
@@ -920,7 +946,7 @@ const FormPage = () => {
         const payload = {
           formData: processedFormData,
           status: "Completed",
-          userId: token,
+          userId,
         };
         result = await formsService.createForm(payload, token);
 
@@ -945,11 +971,11 @@ const FormPage = () => {
         setHasUnsavedChanges(false);
         resetFormWithFixedFields();
       } else {
-        // alert(`Error: ${result.error || "Failed to save form"}`);
+        alert(`Error: ${result.error || "Failed to save form"}`);
       }
     } catch (error) {
       console.error("Error submitting form:", error);
-      // alert(`Error: ${handleApiError(error, "Failed to save form")}`);
+      alert(`Error: ${handleApiError(error, "Failed to save form")}`);
     } finally {
       setIsCreatingForm(false);
     }
@@ -960,6 +986,25 @@ const FormPage = () => {
     setIsGenerating(true);
 
     try {
+      const token = getAuthToken();
+      const formIdToUpdate = editingFormId || createdFormId;
+
+      if (formIdToUpdate) {
+        const processedFormDataForSave = await convertImagesToBase64(formData);
+        const updateResult = await formsService.updateForm(
+          formIdToUpdate,
+          processedFormDataForSave,
+          token
+        );
+
+        if (!updateResult.success) {
+          throw new Error(updateResult.error || "Failed to save form before generating report");
+        }
+
+        setOriginalFormData(formData);
+        setHasUnsavedChanges(false);
+      }
+
       // Convert base64 data back to File objects for document generation
       const processedFormData = convertBase64ToFiles(formData);
 
@@ -992,7 +1037,7 @@ const FormPage = () => {
     if (type === 'delete') {
       setIsDeletingForm(true);
       try {
-        const token = localStorage.getItem("userResposne");
+        const token = getAuthToken();
         for (const id of ids) {
           const result = await formsService.deleteForm(id, token);
           if (
@@ -1010,11 +1055,12 @@ const FormPage = () => {
         console.error('Error deleting form(s):', err);
       } finally {
         setIsDeletingForm(false);
+        setSelectedForms(new Set());
         await fetchForms();
       }
     } else if (type === 'download') {
       try {
-        const token = localStorage.getItem("token");
+        const token = getAuthToken();
         for (const formId of ids) {
           setDownloadingFormId(formId);
           const formResponse = await formsService.getFormWithData(formId, token);
