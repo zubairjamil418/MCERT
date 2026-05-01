@@ -158,19 +158,70 @@ const convertBase64ToFiles = (formData) => {
 const extractFormDataPayload = (payload) => {
   if (!payload || typeof payload !== "object") return payload;
 
-  if (
-    payload.formData &&
-    typeof payload.formData === "object" &&
-    !Array.isArray(payload.formData)
-  ) {
-    return payload.formData;
+  const visited = new Set();
+  const candidates = [];
+  const likelyFormKeys = [
+    "inspector",
+    "siteName",
+    "dateOfInspection",
+    "reportPreparedBy",
+    "references",
+    "aerialViewImages",
+    "flowMeasurementImages",
+    "signatureIncluded",
+  ];
+
+  const collect = (node) => {
+    if (!node || typeof node !== "object" || visited.has(node)) return;
+    visited.add(node);
+
+    if (!Array.isArray(node)) {
+      candidates.push(node);
+    }
+
+    if (
+      node.formData &&
+      typeof node.formData === "object" &&
+      !Array.isArray(node.formData)
+    ) {
+      candidates.push(node.formData);
+      collect(node.formData);
+    }
+
+    if (node.data && typeof node.data === "object") {
+      collect(node.data);
+    }
+  };
+
+  collect(payload);
+
+  const scoreCandidate = (obj) => {
+    if (!obj || typeof obj !== "object" || Array.isArray(obj)) return -1;
+
+    const keys = Object.keys(obj);
+    if (keys.length === 0) return -1;
+
+    const likelyKeyCount = likelyFormKeys.reduce(
+      (count, key) => count + (key in obj ? 1 : 0),
+      0
+    );
+
+    // Favor objects that look like full form payloads.
+    return likelyKeyCount * 100 + keys.length;
+  };
+
+  let best = null;
+  let bestScore = -1;
+
+  for (const candidate of candidates) {
+    const score = scoreCandidate(candidate);
+    if (score > bestScore) {
+      best = candidate;
+      bestScore = score;
+    }
   }
 
-  if (payload.data) {
-    return extractFormDataPayload(payload.data);
-  }
-
-  return payload;
+  return best || payload;
 };
 
 const FormPage = () => {
@@ -1065,7 +1116,8 @@ const FormPage = () => {
           setDownloadingFormId(formId);
           const formResponse = await formsService.getFormWithData(formId, token);
           if (!formResponse.success) continue;
-          const processedFormData = convertBase64ToFiles(formResponse.data.formData);
+          const extractedPayload = extractFormDataPayload(formResponse.data);
+          const processedFormData = convertBase64ToFiles(extractedPayload);
           await generateMCLERTSReport(processedFormData);
         }
         const msg = ids.length === 1 ? 'Form downloaded successfully!' : `${ids.length} forms downloaded successfully!`;
