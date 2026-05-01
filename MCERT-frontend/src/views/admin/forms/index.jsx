@@ -158,8 +158,6 @@ const convertBase64ToFiles = (formData) => {
 const extractFormDataPayload = (payload) => {
   if (!payload || typeof payload !== "object") return payload;
 
-  const visited = new Set();
-  const candidates = [];
   const likelyFormKeys = [
     "inspector",
     "siteName",
@@ -170,6 +168,42 @@ const extractFormDataPayload = (payload) => {
     "flowMeasurementImages",
     "signatureIncluded",
   ];
+
+  const hasLikelyFormShape = (obj) =>
+    !!obj &&
+    typeof obj === "object" &&
+    !Array.isArray(obj) &&
+    likelyFormKeys.some((key) => key in obj);
+
+  // Prefer explicit common API shapes first.
+  const preferredCandidates = [
+    payload?.formData,
+    payload?.data?.formData,
+    payload?.data?.data?.formData,
+    payload?.data?.data,
+    payload?.data,
+    payload,
+  ];
+
+  for (const candidate of preferredCandidates) {
+    if (hasLikelyFormShape(candidate)) {
+      return candidate;
+    }
+  }
+
+  // Fallback: score nested objects and pick the best match.
+  const visited = new Set();
+  const candidates = [];
+  const wrapperKeys = new Set([
+    "success",
+    "message",
+    "error",
+    "pagination",
+    "summary",
+    "filters",
+    "status",
+    "data",
+  ]);
 
   const collect = (node) => {
     if (!node || typeof node !== "object" || visited.has(node)) return;
@@ -205,9 +239,13 @@ const extractFormDataPayload = (payload) => {
       (count, key) => count + (key in obj ? 1 : 0),
       0
     );
+    const wrapperKeyCount = keys.reduce(
+      (count, key) => count + (wrapperKeys.has(key) ? 1 : 0),
+      0
+    );
 
-    // Favor objects that look like full form payloads.
-    return likelyKeyCount * 100 + keys.length;
+    // Favor form-like objects and penalize API wrapper-like objects.
+    return likelyKeyCount * 100 + keys.length - wrapperKeyCount * 20;
   };
 
   let best = null;
@@ -228,7 +266,21 @@ const FormPage = () => {
   const getAuthToken = () =>
     localStorage.getItem("token") || localStorage.getItem("authToken");
 
-  const getUserId = () => localStorage.getItem("userResposne");
+  const getUserId = () => {
+    const raw = localStorage.getItem("userResposne");
+    if (!raw) return null;
+
+    try {
+      const parsed = JSON.parse(raw);
+      if (typeof parsed === "string") return parsed;
+      if (parsed && typeof parsed === "object") {
+        return parsed._id || parsed.id || parsed.userId || raw;
+      }
+      return raw;
+    } catch {
+      return raw;
+    }
+  };
 
   // State for forms data
   const [forms, setForms] = useState([]);

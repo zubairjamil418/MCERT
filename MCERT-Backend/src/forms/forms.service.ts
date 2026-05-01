@@ -4,6 +4,8 @@ import { Model, Types, Connection } from 'mongoose';
 import { GridFSBucket, ObjectId } from 'mongodb';
 import { Readable } from 'stream';
 import * as zlib from 'zlib';
+import { promises as fs } from 'fs';
+import { basename, join } from 'path';
 import { FileStorageService } from './file-storage.service';
 import { Form } from './entities/form.entity';
 import {
@@ -816,6 +818,37 @@ export class FormsService {
         // File may not exist (e.g. path from a different environment).
         // Fall through to legacy fallbacks.
         console.warn(`File storage read failed for ${form._id}, falling back:`, error.message);
+
+        // Attempt to recover using fileName and/or form ID pattern in storage/forms.
+        const recoveredFilePath = await this.recoverFormFilePath(form);
+        if (recoveredFilePath) {
+          try {
+            const recoveredData = await this.fileStorageService.retrieveFormData(
+              recoveredFilePath,
+              recoveredFilePath.endsWith('.gz') ? true : form.isCompressed,
+            );
+
+            // Persist recovered path so subsequent reads are fast and stable.
+            await this.formModel.updateOne(
+              { _id: form._id },
+              {
+                $set: {
+                  filePath: recoveredFilePath,
+                  fileName: basename(recoveredFilePath),
+                  isCompressed: recoveredFilePath.endsWith('.gz'),
+                  storageMethod: 'file',
+                },
+              },
+            );
+
+            return recoveredData;
+          } catch (recoverReadError) {
+            console.warn(
+              `Recovered file read also failed for ${form._id}:`,
+              recoverReadError.message,
+            );
+          }
+        }
       }
     }
 
@@ -827,6 +860,49 @@ export class FormsService {
         return this.decompressData(form.compressedData);
       default:
         return form.formData;
+    }
+  }
+
+  private async recoverFormFilePath(form: any): Promise<string | null> {
+    try {
+      const storageDir = join(process.cwd(), 'storage', 'forms');
+      const files = await fs.readdir(storageDir);
+      if (!files.length) return null;
+
+      // Prefer exact filename match if present.
+      if (form.fileName && files.includes(form.fileName)) {
+        return join(storageDir, form.fileName);
+      }
+
+      const formId = form?._id?.toString?.();
+      const currentBaseName = form.filePath ? basename(form.filePath) : null;
+
+      // Build a short candidate list from known identifiers.
+      const candidates = files.filter((file) => {
+        if (formId && file.includes(formId)) return true;
+        if (currentBaseName) {
+          const stem = currentBaseName.replace(/\.(json|gz)$/i, '');
+          if (stem && file.includes(stem)) return true;
+        }
+        return false;
+      });
+
+      if (!candidates.length) return null;
+
+      // Choose the most recently modified candidate.
+      const candidateStats = await Promise.all(
+        candidates.map(async (file) => {
+          const fullPath = join(storageDir, file);
+          const stat = await fs.stat(fullPath);
+          return { fullPath, mtime: stat.mtimeMs };
+        }),
+      );
+
+      candidateStats.sort((a, b) => b.mtime - a.mtime);
+      return candidateStats[0]?.fullPath || null;
+    } catch (error) {
+      console.warn(`Failed to recover file path for form ${form?._id}:`, error.message);
+      return null;
     }
   }
 
