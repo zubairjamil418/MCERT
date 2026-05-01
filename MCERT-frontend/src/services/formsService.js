@@ -17,11 +17,33 @@ const makeApiCall = async (url, options = {}) => {
       },
     });
 
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+    const contentType = response.headers.get("content-type") || "";
+    const isJson = contentType.includes("application/json");
+    const hasBody = response.status !== 204;
+
+    let data = null;
+    if (hasBody) {
+      data = isJson ? await response.json() : await response.text();
     }
 
-    const data = await response.json();
+    if (!response.ok) {
+      const errorMessage =
+        (typeof data === "object" && data?.message) ||
+        (typeof data === "string" && data) ||
+        `HTTP error! status: ${response.status}`;
+      throw new Error(errorMessage);
+    }
+
+    // Some endpoints return 200 with { success: false, ... }.
+    // Treat those as failures so UI does not clear/reset on failed saves.
+    if (data && typeof data === "object" && data.success === false) {
+      return {
+        success: false,
+        error: data.error || data.message || "Request failed",
+        data,
+      };
+    }
+
     return { success: true, data };
   } catch (error) {
     console.error("API call failed:", error);

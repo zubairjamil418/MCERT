@@ -1,5 +1,6 @@
 import {
   Controller,
+  BadRequestException,
   Get,
   Post,
   Body,
@@ -183,7 +184,21 @@ export class FormsController {
 
   @Patch(':id')
   @UseGuards(AuthGuard)
-  update(@Param('id') id: string, @Body() updateFormDto: UpdateFormDto) {
+  update(
+    @Param('id') id: string,
+    @Body() updateFormDto: UpdateFormDto,
+    @Req() req: any,
+  ) {
+    // If @Body() returns empty object, use raw body as fallback.
+    if (!updateFormDto || Object.keys(updateFormDto).length === 0) {
+      updateFormDto = req.body as UpdateFormDto;
+    }
+
+    // Prevent silent no-op updates that look successful to clients.
+    if (!updateFormDto?.formData) {
+      throw new BadRequestException('formData is required for update');
+    }
+
     return this.formsService.update(id, updateFormDto);
   }
 
